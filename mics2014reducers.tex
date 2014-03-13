@@ -1,0 +1,149 @@
+% This is sigproc-sp.tex -FILE FOR V2.6SP OF ACM_PROC_ARTICLE-SP.CLS
+% OCTOBER 2002
+%
+% It is an example file showing how to use the 'acm_proc_article-sp.cls' V2.6SP
+% LaTeX2e document class file for Conference Proceedings submissions.
+% ----------------------------------------------------------------------------------------------------------------
+% This .tex file (and associated .cls V2.6SP) *DOES NOT* produce:
+%       1) The Permission Statement
+%       2) The Conference (location) Info information
+%       3) The Copyright Line with ACM data
+%       4) Page numbering
+%
+%  However, both the CopyrightYear (default to 2002) and the ACM Copyright Data
+% (default to X-XXXXX-XX-X/XX/XX) can still be over-ridden by whatever the author
+% inserts into the source .tex file.
+% e.g.
+% \CopyrightYear{2003} will cause 2003 to appear in the copyright line.
+% \crdata{0-12345-67-8/90/12} will cause 0-12345-67-8/90/12 to appear in the copyright line.
+%
+% ---------------------------------------------------------------------------------------------------------------
+% It is an example which *does* use the .bib file (from which the .bbl file
+% is produced).
+% REMEMBER HOWEVER: After having produced the .bbl file,
+% and prior to final submission,
+% you need to 'insert'  your .bbl file into your source .tex file so as to provide
+% ONE 'self-contained' source file.
+%
+% Questions regarding SIGS should be sent to
+% Adrienne Griscti ---> griscti@acm.org
+%
+% Questions/suggestions regarding the guidelines, .tex and .cls files, etc. to
+% Gerald Murray ---> murray@acm.org 
+%
+% For tracking purposes - this is V2.6SP - OCTOBER 2002
+
+
+\documentclass[12pt]{article}
+
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textwidth}{6in}
+\setlength{\textheight}{9in}
+\setlength{\parindent}{0in} 
+
+\usepackage{graphicx} %For jpg figure inclusion
+\usepackage{times} %For typeface
+\usepackage{epsfig}
+\usepackage{color} %For Comments
+\usepackage[all]{xy}
+\usepackage{float}
+\usepackage{subfigure} 
+\usepackage{url}
+\usepackage{parskip}
+
+%% Elena's favorite green (thanks, Fernando!)
+\definecolor{ForestGreen}{RGB}{34,139,34}
+% Uncomment this if you want to show work-in-progress comments
+%\newcommand{\comment}[1]{{\bf \tt  {#1}}}
+% Uncomment this if you don't want to show comments
+\newcommand{\comment}[1]{}
+\newcommand{\jcomment}[1]{\textcolor{ForestGreen}{\comment{Jeff: {#1}}}}
+\newcommand{\emcomment}[1]{\textcolor{blue}{\comment{Elena: {#1}}}}
+\newcommand{\scomment}[1]{\textcolor{red}{\comment{Seth: {#1}}}}
+\newcommand{\todo}[1]{\textcolor{green}{\comment{To Do: {#1}}}}
+
+\begin{document}
+\pagestyle{plain}
+%
+% --- Author Metadata here ---
+%\conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
+%\setpagenumber{50}
+%\CopyrightYear{2002} % Allows default copyright year (2002) to be
+%over-ridden - IF NEED BE. 
+%\crdata{0-12345-67-8/90/01}  % Allows default copyright data
+%(X-XXXXX-XX-X/XX/XX) to be over-ridden. 
+% --- End of Author Metadata ---
+
+\title{The Role of Method Call Optimizations in the Efficiency of Java Generics}
+%\subtitle{[Extended Abstract \comment{DO WE NEED THIS?}]
+%\titlenote{}}
+%
+% You need the command \numberofauthors to handle the "boxing"
+% and alignment of the authors under the title, and to add
+% a section for authors number 4 through n.
+%
+% Up to the first three authors are aligned under the title;
+% use the \alignauthor commands below to handle those names
+% and affiliations. Add names, affiliations, addresses for
+% additional authors as the argument to \additionalauthors;
+% these will be set for you without further effort on your
+% part as the last section in the body of your article BEFORE
+% References or any Appendices.
+
+\author{
+Henry Fellows, Joseph Einertson, and Elena Machkasova \\
+Computer Science Discipline \\
+University of Minnesota Morris\\
+Morris, MN 56267\\
+??, ??, elenam@umn.edu
+}
+
+\date{}
+
+\maketitle
+\thispagestyle{empty}
+
+\section*{\centering Abstract}
+In modern processing environments, parallelism is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. The most common approach to concurrency is the mutable state model, where threads can attempt to read or write the value of a shared resource. This approach, while it may be more efficient, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. In immutable state systems, this is prevented by having the thread create an instance of the resource as soon as it is able to access the resource.
+
+Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, with the first release in late 2007. Clojure runs on the Java virtual machine, and features immutable data structures along with other tools to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 clojure.core.reducers was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. Clojure originally had an earlier version of this functionality in pmap, a parallel version of map, a built in function that traverses Clojure collections. Clojure includes many utilities that are implemented using significantly different methods. Reducers are based on the Java Fork/Join framework, while pmap uses the Java Futures library.
+
+In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time. The functions have been timed on two systems as of now; a system with two Intel Xeon four-core processors and another with a hyperthreaded Intel i7.
+
+We have found that both pmap and reducers decrease the execution time by a factor of the number of cores, as expected. Reducers were found to provide a significant performance gain, in all situations, over pmap. We also studied the distribution of load across multiple cores, and the scaling of the execution time as data size increases. We present the results, analysis, and conclusions.
+\emcomment{As submitted to MICS; needs to be changed}
+
+
+\newpage
+\setcounter{page}{1}
+
+\section{Introduction}\label{sec:intro}
+
+
+%
+% The following two commands are all you need in the
+% initial runs of your .tex file to
+% produce the bibliography for the citations in your paper.
+%\bibliographystyle{abbrv}
+%\end{thebibliography}
+
+%\bibliography{generic_types}  
+% You must have a proper ".bib" file
+%  and remember to run:
+% latex bibtex latex latex
+% to resolve all references
+%
+% ACM needs 'a single self-contained file'!
+%
+\bibliographystyle{ACM}
+\bibliography{mics2014reducersBibliography}
+
+
+% That's all folks!
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
