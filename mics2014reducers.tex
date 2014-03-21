@@ -64,6 +64,9 @@
 \newcommand{\emcomment}[1]{\textcolor{ForestGreen}{\comment{Elena: {#1}}}}
 \newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
 
+%% Henry's color
+\definecolor{Teal}{RGB}{2,132,130}
+
 \begin{document}
 \pagestyle{plain}
 %
@@ -135,12 +138,20 @@ Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2
 \section{Efficency of parallel methods in Clojure}\label{sec:efficency}
 
 \subsection{Methodology}\label{sec:methods}
+\newcommand{\emcomment}[1]{\textcolor{Teal}{\comment{Henry: {we'll need an explaination of the tests - I'm running compare-sum-primes, and I'm thinking about the others. The following is just a sketch}}}}
+Following the method shown above, we ran the tests on several different machines: box1, box2, and box3. Box 1 has a Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7. Box 2 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS. The full set of tests, comprising a thousand runs of each testing function, was run three times on each machine. JVM warm-up inflates the times greatly, and the first run was discarded because of this.
 
 \subsection{Desults}\label{sec:results}
+In this section we show the results of running our tests across the machines mentioned above;
+\newcommand{\emcomment}[1]{\textcolor{Teal}{\comment{Henry: {I'll be putting the carts & tables here}}}}
 
 \subsection{Discussion}\label{sec:discussion}
+We have found that both pmap and reducers decrease the execution time by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over pmap. The average gain was x\%, with a range from a\% to b\%.
 
 \section{Conclusion and future work}\label{sec:conclusion}
+
+\subsection{Future Work}\{label{sec:conclusion}
+
 
 %
 % The following two commands are all you need in the
