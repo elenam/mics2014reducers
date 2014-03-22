@@ -52,8 +52,10 @@
 \usepackage[all]{xy}
 \usepackage{float}
 \usepackage{subfigure} 
+\usepackage{hyperref}
 \usepackage{url}
 \usepackage{parskip}
+ 
 
 %% Elena's favorite green (thanks, Fernando!)
 \definecolor{ForestGreen}{RGB}{34,139,34}
@@ -64,6 +66,7 @@
 \newcommand{\emcomment}[1]{\textcolor{ForestGreen}{\comment{Elena: {#1}}}}
 \newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
 \newcommand{\hfcomment}[1]{\textcolor{Teal}{\comment{Henry: {#1}}}}
+\newcommand{\clocode}[1]{{\texttt {#1}}}
 
 %% Henry's color
 \definecolor{Teal}{RGB}{2,132,130}
@@ -116,7 +119,7 @@ Clojure is a Lisp dialect designed for concurrency and portability by Rich Hicke
 
 In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time. The functions have been timed on two systems as of now; a system with two Intel Xeon four-core processors and another with a hyperthreaded Intel i7.
 
-We have found that both pmap and reducers decrease the execution time by a factor of the number of cores, as expected. Reducers were found to provide a significant performance gain, in all situations, over pmap. We also studied the distribution of load across multiple cores, and the scaling of the execution time as data size increases. We present the results, analysis, and conclusions.
+We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. Reducers were found to provide a significant performance gain, in all situations, over \clocode{pmap}. We also studied the distribution of load across multiple cores, and the scaling of the execution time as data size increases. We present the results, analysis, and conclusions.
 \emcomment{As submitted to MICS; needs to be changed}
 
 
@@ -135,8 +138,9 @@ Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2
 \subsection{Introduction to pmap}\label{sec:pmap}
 
 \subsection{Introduction to reducers}\label{sec:reducers}
+Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. 
 
-\section{Efficiency of parallel methods in Clojure}\label{sec:efficency}
+\section{Efficiency of parallel methods in Clojure}\label{sec:efficiency}
 
 \subsection{Methodology}\label{sec:methods}
 \emcomment{Need background on JVM warmup (and some background on JVM)}
@@ -148,7 +152,7 @@ In this section we show the results of running our tests across the machines men
 \hfcomment{I'll be putting the carts \& tables here}
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that both pmap and reducers decrease the execution time by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over pmap. The average gain was x\%, with a range from a\% to b\%.
+We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over \clocode{pmap}. The average gain was x\%, with a range from a\% to b\%.
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
@@ -170,7 +174,7 @@ We have found that both pmap and reducers decrease the execution time by a facto
 %
 % ACM needs 'a single self-contained file'!
 %
-\bibliographystyle{ACM}
+\bibliographystyle{plainnat}
 \bibliography{mics2014reducers}
 
 
