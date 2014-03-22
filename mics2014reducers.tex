@@ -125,31 +125,32 @@ We have found that both pmap and reducers decrease the execution time by a facto
 
 \section{Introduction}\label{sec:intro}
 
-\section{background}\label{sec:background}
+\section{Background}\label{sec:background}
 
 \subsection{Clojure}\label{sec:clojure}
 Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. 
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
 
-\subsection{Introdcution to reducers}\label{sec:reducers}
-
 \subsection{Introduction to pmap}\label{sec:pmap}
 
-\section{Efficency of parallel methods in Clojure}\label{sec:efficency}
+\subsection{Introduction to reducers}\label{sec:reducers}
+
+\section{Efficiency of parallel methods in Clojure}\label{sec:efficency}
 
 \subsection{Methodology}\label{sec:methods}
-\hfcomment{we'll need an explaination of the tests - I'm running compare-sum-primes, and I'm thinking about the others. The following is just a sketch}
-Following the method shown above, we ran the tests on several different machines: box1, box2, and box3. Box 1 has a Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7. Box 2 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS. The full set of tests, comprising a thousand runs of each testing function, was run three times on each machine. JVM warm-up inflates the times greatly, and the first run was discarded because of this.
+\emcomment{Need background on JVM warmup (and some background on JVM)}
+\hfcomment{we'll need an explanation of the tests - I'm running compare-sum-primes, and I'm thinking about the others. The following is just a sketch}
+Following the method shown above, we ran the tests on several different machines: \emcomment{that we refer to as} box1, box2, and box3. Box 1 has a Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7. Box 2 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS. \emcomment{The previous should be a list} The full set of tests, comprising a thousand runs of each testing function, was run three times on each machine. JVM warm-up inflates the times greatly, and the first run was discarded because of this. 
 
-\subsection{Desults}\label{sec:results}
+\subsection{Results}\label{sec:results}
 In this section we show the results of running our tests across the machines mentioned above;
 \hfcomment{I'll be putting the carts \& tables here}
 
 \subsection{Discussion}\label{sec:discussion}
 We have found that both pmap and reducers decrease the execution time by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over pmap. The average gain was x\%, with a range from a\% to b\%.
 
-\section{Conclusion and future work}\label{sec:conclusion}
+\section{Conclusions and future work}\label{sec:conclusion}
 
 \subsection{Future Work}\label{sec:future}
 
