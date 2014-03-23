@@ -155,7 +155,7 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 
 
 \subsection{Clojure}\label{sec:clojure}
-Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine. Leveraging the widespread nature of the jvm, clojure can run on any \hfcomment{is that true?} enviroment that supports the JVM. 
+Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine. Leveraging the widespread nature of the jvm, Clojure can run on any \hfcomment{is that true?} environment that supports the JVM. 
 
 The Lisp family of languages have several features in common, the most visible of which is the polish-prefix notation. Cojure, as a lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, 
 \begin{verbatim}
@@ -169,21 +169,26 @@ Functions in Lisp are created using the \clocode{defn} macro. It is useful to no
 (add1 4)
 => 5
 \end{verbatim}
- Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguements
+ Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments
 \begin{verbatim}
 (defn apply-fn [a-function an-arg] (a-function an-arg))
 (apply-fn add1 4)
 => 5
 \end{verbatim}
-Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a list and then applies the function to every item in the list.
+Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection.
 \begin{verbatim}
 (map add1 '(0 1 2 3 4))
 =>'(1 2 3 4 5)
 \end{verbatim}
-Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a list. It then takes the result and applies the function to the result and the next item in the list, repeating this process until the list is empty.
+Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
 \begin{verbatim}
 (reduce +  '(1 2 3))
 =>6
+\end{verbatim}
+The next of the major high-order functions is filter, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
+\begin{verbatim}
+(filter even? '(1 2 3 4 5))
+=> '(2 4)
 \end{verbatim}
 \emcomment{Need: prefix syntax, explain higher order functions, explain map, reduce, fold, filter. Explain vectors (briefly) since our stuff only works on vectors}
 
@@ -255,7 +260,7 @@ Here the work of determining the primality of the numbers is moved into a mappin
  Box 3 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS.
  \end{itemize}
   
-The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warmup, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimisation and lazy loading relevant portions of code. In order to provide data that is unambigous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
+The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
 
 
 

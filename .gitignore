@@ -21,3 +21,4 @@ pom.xml.asc
 .lein-failures
 .lein-plugins
 .lein-repl-history
+mics2014reducers.out
