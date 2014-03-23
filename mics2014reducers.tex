@@ -34,42 +34,6 @@
 % For tracking purposes - this is V2.6SP - OCTOBER 2002
 
 
-\documentclass[12pt]{article}
-
-\setlength{\oddsidemargin}{0in}
-\setlength{\evensidemargin}{0in}
-\setlength{\topmargin}{0in}
-\setlength{\headheight}{0in}
-\setlength{\headsep}{0in}
-\setlength{\textwidth}{6in}
-\setlength{\textheight}{9in}
-\setlength{\parindent}{0in} 
-
-\usepackage{graphicx} %For jpg figure inclusion
-\usepackage{times} %For typeface
-\usepackage{epsfig}
-\usepackage{color} %For Comments
-\usepackage[all]{xy}
-\usepackage{float}
-\usepackage{subfigure} 
-\usepackage{hyperref}
-\usepackage{url}
-\usepackage{parskip}
- 
-
-%% Elena's favorite green (thanks, Fernando!)
-\definecolor{ForestGreen}{RGB}{34,139,34}
-% Uncomment this if you want to show work-in-progress comments
-\newcommand{\comment}[1]{{\bf \tt  {#1}}}
-% Uncomment this if you don't want to show comments
-%\newcommand{\comment}[1]{}
-\newcommand{\emcomment}[1]{\textcolor{ForestGreen}{\comment{Elena: {#1}}}}
-\newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
-\newcommand{\hfcomment}[1]{\textcolor{Teal}{\comment{Henry: {#1}}}}
-\newcommand{\clocode}[1]{{\texttt {#1}}}
-
-%% Henry's color
-\definecolor{Teal}{RGB}{2,132,130}
 
 \begin{document}
 \pagestyle{plain}
@@ -82,6 +46,9 @@
 %\crdata{0-12345-67-8/90/01}  % Allows default copyright data
 %(X-XXXXX-XX-X/XX/XX) to be over-ridden. 
 % --- End of Author Metadata ---
+
+
+
 
 \title{Exploration of parallelization efficiency in the Clojure programming language}
 %\subtitle{[Extended Abstract \comment{DO WE NEED THIS?}]
@@ -99,6 +66,9 @@
 % part as the last section in the body of your article BEFORE
 % References or any Appendices.
 
+
+
+
 \author{
 Henry Fellows, Joseph Einertson, and Elena Machkasova \\
 Computer Science Discipline \\
@@ -107,45 +77,101 @@ Morris, MN 56267\\
 ??, ??, elenam@umn.edu
 }
 
+
+
+
 \date{}
+
+
+
 
 \maketitle
 \thispagestyle{empty}
 
+
 \section*{\centering Abstract}
 In modern processing environments, parallelism is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. The most common approach to concurrency is the mutable state model, where threads can attempt to read or write the value of a shared resource. This approach, while it may be more efficient, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. In immutable state systems, this is prevented by having the thread create an instance of the resource as soon as it is able to access the resource.
 
+
 Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, with the first release in late 2007. Clojure runs on the Java virtual machine, and features immutable data structures along with other tools to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 clojure.core.reducers was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. Clojure originally had an earlier version of this functionality in pmap, a parallel version of map, a built in function that traverses Clojure collections. Clojure includes many utilities that are implemented using significantly different methods. Reducers are based on the Java Fork/Join framework, while pmap uses the Java Futures library.
 
+
 In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time. The functions have been timed on two systems as of now; a system with two Intel Xeon four-core processors and another with a hyperthreaded Intel i7.
+
 
 We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. Reducers were found to provide a significant performance gain, in all situations, over \clocode{pmap}. We also studied the distribution of load across multiple cores, and the scaling of the execution time as data size increases. We present the results, analysis, and conclusions.
 \emcomment{As submitted to MICS; needs to be changed}
 
 
-\newpage
+ \newpage
 \setcounter{page}{1}
+
 
 \section{Introduction}\label{sec:intro}
 
+
+
+
 \section{Background}\label{sec:background}
 
+
+
+
 \subsection{Clojure}\label{sec:clojure}
-Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. 
+Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a lisp dialect designed for concurrency and portability
+
+
+
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
 
+
+
+
 \subsection{Introduction to pmap}\label{sec:pmap}
+
+
+
 
 \subsection{Introduction to reducers}\label{sec:reducers}
 Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. 
 
 \section{Efficiency of parallel methods in Clojure}\label{sec:efficiency}
 
-\subsection{Methodology}\label{sec:methods}
+\subsection{Test Methodology}\label{sec:methods}
+ 
 \emcomment{Need background on JVM warmup (and some background on JVM)}
-\hfcomment{we'll need an explanation of the tests - I'm running compare-sum-primes, and I'm thinking about the others. The following is just a sketch}
-Following the method shown above, we ran the tests on several different machines: \emcomment{that we refer to as} box1, box2, and box3. Box 1 has a Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7. Box 2 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS. \emcomment{The previous should be a list} The full set of tests, comprising a thousand runs of each testing function, was run three times on each machine. JVM warm-up inflates the times greatly, and the first run was discarded because of this. 
+ 
+\hfcomment{we'll need an explanation of the tests - I'm running compare-sum-primes, compare-count-primes, and compare-sum-sqrt. The following is just a sketch}
+ 
+ \subsubsection{Compare-Sum-Primes}\label{sec:sum-primes}
+ 
+ \hfcomment{info about how this test works
+ 
+ \subsubsection{Compare-Count-Primes}\label{sec:count-primes}
+ 
+ \hfcomment{info about how this test works
+ 
+ \subsubsection{Compare-Sum-Sqrt}\label{sec:sum-sqrt}
+ 
+ \hfcomment{info about how this test works
+ 
+ \subsection{Execution Methodology}\label{sec:eMethods}
+ Following the method shown above, we ran the tests on several different machines referred to as box1, box2, and box3.
+ 
+\begin{itemize}
+ \item 
+ Box 1 has a Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7.
+ \item
+ Box 2 has a Intel i5 (650) cpu, with 4 cores, running Fedora 18.
+ \item
+ Box 3 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS.
+ \end{itemize}
+ 
+The full set of tests, run three times on each machine. JVM warm-up - the period where
+
+
+
 
 \subsection{Tests}\label{sec:tests}
 \emcomment{Describe the tests. Joe, this should be your section for the most part, although Henry changed some of the outputs and added more cases}
@@ -160,9 +186,21 @@ In this section we show the results of running our tests across the machines men
 \subsection{Discussion}\label{sec:discussion}
 We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over \clocode{pmap}. The average gain was x\%, with a range from a\% to b\%.
 
+
+
+
 \section{Conclusions and future work}\label{sec:conclusion}
 
+
+
+
 \subsection{Future Work}\label{sec:future}
+
+
+
+
+
+
 
 
 %
@@ -171,6 +209,9 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 % produce the bibliography for the citations in your paper.
 %\bibliographystyle{abbrv}
 %\end{thebibliography}
+
+
+
 
 %\bibliography{generic_types}  
 % You must have a proper ".bib" file
@@ -182,6 +223,12 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 %
 \bibliographystyle{plainnat}
 \bibliography{mics2014reducers}
+
+
+
+
+
+
 
 
 % That's all folks!
