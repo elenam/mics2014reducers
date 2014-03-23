@@ -116,46 +116,23 @@
      :pmap    (str-time #(reduce max (pmap count data)))
      :preduce (str-time #(r/fold reduce-str-len data))}))
 
-(defn reduce-num-primes
-  ([] 0)
-  ([a b] (if (p/fermat-test b 5)
-          (inc a)
-          a)))
-
-(defn compare-num-primes [runs nums num-size]
-  (for [x (range runs)
-    :let [data (doall (rand-int-data nums num-size))
-          mf #(if (p/fermat-test % 5) 1 0)]]
-    {:reduce-and-map     (str-time (fn [] (reduce + (map mf data))))
-     :reduce-and-pmap    (str-time (fn [] (reduce + (pmap mf data))))
-     :r/fold-and-pmap    (str-time (fn [] (r/fold + (pmap mf data))))
-     :r/fold             (str-time (fn [] (r/fold reduce-num-primes data)))}))
-
 (defn reduce-sum-primes
   ([] 0)
   ([a b] (if (p/fermat-test b 5)
           (+' a b)
           a)))
 
-(defn compare-sum-primes-same [runs nums num-size]
-  (let [data (doall (rand-int-data nums num-size))
-        mf #(if (p/fermat-test % 5) % 0)]
-  (for [x (range runs)]
-    {:reduce-and-map      (str-time (fn [] (reduce + (map mf data))))
-     :reduce-and-pmap     (str-time (fn [] (reduce + (pmap mf data))))
-     :r/fold-and-pmap     (str-time (fn [] (r/fold + (pmap mf data))))
-     :r/fold-and-map      (str-time (fn [] (r/fold +' (map mf data))))
-     :r/fold               (str-time (fn [] (r/fold reduce-sum-primes data)))})))
-
 (defn compare-sum-primes [runs nums num-size]
   (for [x (range (inc runs))
     :let [data (vec (doall (rand-int-data nums num-size)))
           mf #(if (p/fermat-test % 5) % 0)]]
-    {:map      (str-time (fn [] (reduce +' (map mf data))))
-     :pmap     (str-time (fn [] (reduce +' (pmap mf data))))
-     :pall     (str-time (fn [] (r/fold +' (pmap mf data))))
-     :predsmap (str-time (fn [] (r/fold +' (map mf data))))
-     :preduce  (str-time (fn [] (r/fold reduce-sum-primes data)))}))
+    {:reduce-and-map       (str-time (fn [] (reduce +' (map mf data))))
+     :reduce-and-pmap      (str-time (fn [] (reduce +' (pmap mf data))))
+     :r/fold-and-pmap      (str-time (fn [] (r/fold +' (pmap mf data))))
+     :r/fold-and-map       (str-time (fn [] (r/fold +' (map mf data))))
+     :r/fold-and-r/map     (str-time (fn [] (r/fold +' (r/map mf data))))
+     :r/fold               (str-time (fn [] (r/fold reduce-sum-primes data)))
+     }))
 
 (defn reduce-sum-sqrt
   ([] 0)
@@ -165,11 +142,14 @@
   (for [x (range (inc runs))
     :let [data (vec (doall (rand-int-data nums num-size)))
           mf cljmath/sqrt]]
-    {:map      (str-time (fn [] (reduce +' (map mf data))))
-     :pmap     (str-time (fn [] (reduce +' (pmap mf data))))
-     :pall     (str-time (fn [] (r/fold +' (pmap mf data))))
-     :preduce  (str-time (fn [] (r/fold reduce-sum-sqrt data)))}))
+    {:reduce             (str-time (fn [] (reduce reduce-sum-sqrt data)))
+     :reduce-and-map     (str-time (fn [] (reduce +' (map mf data))))
+     :reduce-and-pmap    (str-time (fn [] (reduce +' (pmap mf data))))
+     :r/fold-and-pmap    (str-time (fn [] (r/fold +' (pmap mf data))))
+     :r/fold-and-r/map   (str-time (fn [] (r/fold +' (r/map mf data))))
+     :r/fold             (str-time (fn [] (r/fold reduce-sum-sqrt data)))}))
 
+;;;Black Magic
 (defn reduce-count-sqrt
   ([] 0)
   ([a b] (if (p/fermat-test b 5) (inc b) b)))
@@ -178,10 +158,44 @@
   (for [x (range (inc runs))
     :let [data (vec (doall (rand-int-data nums num-size)))
           mf #(if (p/fermat-test % 5) 1 0)]]
-    {:map      (str-time (fn [] (reduce +' (map mf data))))
-     :pmap     (str-time (fn [] (reduce +' (pmap mf data))))
-     :pall     (str-time (fn [] (r/fold +' (pmap mf data))))
-     :preduce  (str-time (fn [] (r/fold reduce-count-sqrt data)))}))
+    {:reduce-and-map     (str-time (fn [] (reduce +' (map mf data))))
+     :reduce-and-pmap    (str-time (fn [] (reduce +' (pmap mf data))))
+     :r/fold-and-pmap    (str-time (fn [] (r/fold +' (pmap mf data))))
+     :r/fold-and-map     (str-time (fn [] (r/fold +' (map mf data))))
+     :r/fold-and-r/map   (str-time (fn [] (r/fold +' (r/map mf data))))
+     :r/fold             (str-time (fn [] (r/fold reduce-count-sqrt data)))}))
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;;;;Begin Comment;;;;
+;;;;;;;;;;;;;;;;;;;;;
+(comment
+
+(defn reduce-num-primes
+  ([] 0)
+  ([a b] (if (p/fermat-test b 5)
+          (+' 1 a)
+          a)))
+
+(defn compare-num-primes [runs nums num-size]
+  (for [x (range runs)
+    :let [data (doall (rand-int-data nums num-size))
+          mf #(if (p/fermat-test % 5) 1 0)]]
+    {:reduce-and-map     (str-time (fn [] (reduce +' (map mf data))))
+     :reduce-and-pmap    (str-time (fn [] (reduce +' (pmap mf data))))
+     :r/fold-and-pmap    (str-time (fn [] (r/fold +' (pmap mf data))))
+     :r/fold-and-map     (str-time (fn [] (r/fold +' (map mf data))))
+     :r/fold             (str-time (fn [] (r/fold reduce-num-primes data)))}))
+
+(defn compare-sum-primes-same [runs nums num-size]
+  (let [data (doall (rand-int-data nums num-size))
+        mf #(if (p/fermat-test % 5) % 0)]
+  (for [x (range runs)]
+    {:reduce-and-map      (str-time (fn [] (reduce +' (map mf data))))
+     :reduce-and-pmap     (str-time (fn [] (reduce +' (pmap mf data))))
+     :r/fold-and-pmap     (str-time (fn [] (r/fold +' (pmap mf data))))
+     :r/fold-and-map      (str-time (fn [] (r/fold +' (map mf data))))
+     :r/fold              (str-time (fn [] (r/fold reduce-sum-primes data)))})))
 
 (defn reduce-expensive-map
   ([] 0)
@@ -224,9 +238,10 @@
     (do (println "Starting round " x)
       {:reduce  (str-time (fn [] (reduce +' (map inc (map inc (map inc data))))))
        :preduce (str-time (fn [] (r/fold +' (r/map inc (r/map inc (r/map inc data))))))})))
-
-
-
+)
+;;;;;;;;;;;;;;;;;;;
+;;;;End Comment;;;;
+;;;;;;;;;;;;;;;;;;;
 
 (defn print-with-gap [coll]
   (doall (map #(println % "\n\n\n") coll)))
@@ -241,10 +256,9 @@
   (println "started")
   ;(print-for-term (compare-sum 10 1000000 1000000000)) ; <<< Ganesha 1
   ;(print-for-term (compare-max 10 1000000 1000000000)) ; <<< Ganesha 2
-  ;(print-for-term (compare-sum-primes 10 100000 1000000000)) ; <<< Ganesha 3
-  ;(print-for-term (compare-count-prime 10 100000 1000000000)) ; <<< Ganesha 4
-  (rep/csv-print (compare-sum-primes 250 10000 1000000000))
-  (rep/csv-print (compare-num-primes 250 10000 1000000000))
+  (rep/csv-print (compare-sum-sqrt 1000 100000 1000000000)) ; <<< Ganesha 3
+  ;(rep/csv-print (compare-count-prime 100 100000 1000000000)) ; <<< Ganesha 4
+  ;(rep/csv-print (compare-sum-primes 1000 10000 1000000000))
   (System/exit 0)
   (let [coll-size 500000 ;1000000
         testfns [run-reducers run-preducers]; run-core run-pcore]
