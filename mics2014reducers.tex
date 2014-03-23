@@ -178,6 +178,11 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}.
 \emcomment{Need background on JVM warmup (and some background on JVM)}
  
 \hfcomment{we'll need an explanation of the tests - I'm running compare-sum-primes, compare-count-primes, and compare-sum-sqrt. The following is just a sketch}
+
+\subsection{Fermat primality test}\label{sec:fermat}
+Two of the tests described rely, at least in part, on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number, which gives a high degree of accuracy for a moderate amount of processing power.
+
+The Fermat primality test relies heavily on exponentiation and modular arithmetic, operations which are relatively expensive for large numbers. The specific mathematics behind the Fermat primality test are tangential to and beyond the scope of this paper. It is only necessary to understand that we chose this test because it is simple to implement, computationally expensive, and an example of a real-world operation which may benefit from Clojure's reducers.
  
  \subsubsection{Compare-Sum-Primes}\label{sec:sum-primes}
  
