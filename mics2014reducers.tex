@@ -33,7 +33,40 @@
 %
 % For tracking purposes - this is V2.6SP - OCTOBER 2002
 
+\documentclass[12pt]{article}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textwidth}{6in}
+\setlength{\textheight}{9in}
+\setlength{\parindent}{0in} 
 
+\usepackage{graphicx} %For jpg figure inclusion
+\usepackage{times} %For typeface
+\usepackage{epsfig}
+\usepackage{color} %For Comments
+\usepackage[all]{xy}
+\usepackage{float}
+\usepackage{subfigure} 
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{parskip}
+
+
+%% Elena's favorite green (thanks, Fernando!)
+\definecolor{ForestGreen}{RGB}{34,139,34}
+% Uncomment this if you want to show work-in-progress comments
+\newcommand{\comment}[1]{{\bf \tt  {#1}}}
+% Uncomment this if you don't want to show comments
+%\newcommand{\comment}[1]{}
+\newcommand{\emcomment}[1]{\textcolor{ForestGreen}{\comment{Elena: {#1}}}}
+\newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
+\newcommand{\hfcomment}[1]{\textcolor{Teal}{\comment{Henry: {#1}}}}
+\newcommand{\clocode}[1]{{\texttt {#1}}}
+%% Henry's color
+\definecolor{Teal}{RGB}{2,132,130}
 
 \begin{document}
 \pagestyle{plain}
@@ -146,15 +179,15 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}.
  
  \subsubsection{Compare-Sum-Primes}\label{sec:sum-primes}
  
- \hfcomment{info about how this test works
+ \hfcomment{info about how this test works}
  
  \subsubsection{Compare-Count-Primes}\label{sec:count-primes}
  
- \hfcomment{info about how this test works
+ \hfcomment{info about how this test works}
  
  \subsubsection{Compare-Sum-Sqrt}\label{sec:sum-sqrt}
  
- \hfcomment{info about how this test works
+ \hfcomment{info about how this test works}
  
  \subsection{Execution Methodology}\label{sec:eMethods}
  Following the method shown above, we ran the tests on several different machines referred to as box1, box2, and box3.
