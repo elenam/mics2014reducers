@@ -200,16 +200,30 @@ Simply, for each element which is found to be prime via the Fermat primality tes
 We also tested the pure r/fold implementation against ones that used r/fold only for parallel summation, and computed the primality of values using map or parallel map. In this case, we used this mapping function:
 
 \begin{verbatim}
-(defn prime-pre-reducer
+(defn count-primes-pre-reducer
   [x] (if (p/fermat-test x 5) 1 0))
 \end{verbatim}
 
 Here the work of determining the primality of the numbers is moved into a mapping operation, which returns 1 for each element if prime, or 0 if not. Then we use r/fold to sum the result in parallel. This is simpler from an implementation standpoint, as our mapping function does not have to conform to the restrictions of r/fold, and summation is trivial to use with r/fold.
   
 \subsubsection{Compare-Sum-Primes}\label{sec:sum-primes}
+The second test we describe is broadly similar to compare-count-primes, but sums the value of all primes (ignoring composite numbers) rather than simply counting them. This is a more computationally expensive test, since the numbers being summed are very large, rather than 0's and 1's. The purpose of this test is to add computational complexity to the r/fold portion to determine what effect the distribution of work has on running time.
 
- 
- \hfcomment{info about how this test works}
+As with compare-count-primes, there is a basic, all-in-one reduce function:
+
+\begin{verbatim}
+(defn reduce-sum-primes
+  [a b] (if (p/fermat-test b 5)
+         (+' a b)
+         a))
+\end{verbatim}
+
+Additionally, as with compare-count-primes, we split the test into two parts for further analysis: one part run with map or pmap, and a second combining part run with r/fold. Our pre-reduction mapping function is similarly simple:
+
+\begin{verbatim}
+(defn sum-primes-pre-reducer
+  [x] (if (p/fermat-test x 5) x 0))
+\end{verbatim}
  
  \subsubsection{Compare-Sum-Sqrt}\label{sec:sum-sqrt}
  
