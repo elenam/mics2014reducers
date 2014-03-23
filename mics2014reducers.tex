@@ -131,14 +131,16 @@ In modern processing environments, parallelism is becoming an increasingly impor
 Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, first released in late 2007. Clojure runs on the Java Virtual Machine (JVM), and features immutable data structures along with other tools to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 clojure.core.reducers was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. Clojure originally had an earlier version of this functionality in pmap, a parallel version of map, a built in function that traverses Clojure collections. Clojure includes many utilities that are implemented using significantly different methods. Reducers are based on the Java Fork/Join framework, while pmap uses the Java Futures library.
 
 
-In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time. The functions have been timed on two systems as of now; a system with two Intel Xeon four-core processors and another with a hyperthreaded Intel i7.
+In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time.
 
 
 We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. Reducers were found to provide a significant performance gain, in all situations, over \clocode{pmap}. We also studied the distribution of load across multiple cores, and the scaling of the execution time as data size increases. We present the results, analysis, and conclusions.
 \emcomment{As submitted to MICS; needs to be changed}
 
 
- \newpage
+ %\newpage
+%this causes problems when compiling.
+
 \setcounter{page}{1}
 
 
@@ -153,9 +155,42 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 
 
 \subsection{Clojure}\label{sec:clojure}
-Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a lisp dialect designed for concurrency and portability
+Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine. Leveraging the widespread nature of the jvm, Clojure can run on any \hfcomment{is that true?} environment that supports the JVM. 
 
-
+The Lisp family of languages have several features in common, the most visible of which is the polish-prefix notation. Cojure, as a lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, 
+\begin{verbatim}
+(+ 2 3)
+=> 5
+\end{verbatim}
+Functions in Lisp are created using the \clocode{defn} macro. It is useful to note that \clocode{defn} is short for \clocode{def} (define) \clocode{fn}, where fn is a common abbreviation of function in the Lisp community.
+\hfcomment{Fishing for feedback on the above line - I don't like it.}
+\begin{verbatim}
+(defn add1 [num] (+ num 1))
+(add1 4)
+=> 5
+\end{verbatim}
+ Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments
+\begin{verbatim}
+(defn apply-fn [a-function an-arg] (a-function an-arg))
+(apply-fn add1 4)
+=> 5
+\end{verbatim}
+Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection.
+\begin{verbatim}
+(map add1 '(0 1 2 3 4))
+=>'(1 2 3 4 5)
+\end{verbatim}
+Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
+\begin{verbatim}
+(reduce +  '(1 2 3))
+=>6
+\end{verbatim}
+The next of the major high-order functions is filter, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
+\begin{verbatim}
+(filter even? '(1 2 3 4 5))
+=> '(2 4)
+\end{verbatim}
+\emcomment{Need: prefix syntax, explain higher order functions, explain map, reduce, fold, filter. Explain vectors (briefly) since our stuff only works on vectors}
 
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
@@ -176,8 +211,6 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}.
 \subsection{Test Methodology}\label{sec:methods}
  
 \emcomment{Need background on JVM warmup (and some background on JVM)}
- 
-\hfcomment{we'll need an explanation of the tests - I'm running compare-sum-primes, compare-count-primes, and compare-sum-sqrt. The following is just a sketch}
 
 \subsection{Fermat primality test}\label{sec:fermat}
 Two of the tests described rely, at least in part, on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number, which gives a high degree of accuracy for a moderate amount of processing power.
@@ -240,8 +273,8 @@ Additionally, as with compare-count-primes, we split the test into two parts for
  \item
  Box 3 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS.
  \end{itemize}
- 
-The full set of tests, run three times on each machine. JVM warm-up - the period where
+  
+The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
 
 
 
@@ -253,11 +286,11 @@ The full set of tests, run three times on each machine. JVM warm-up - the period
 
 \subsection{Results}\label{sec:results}
 In this section we show the results of running our tests across the machines mentioned above;
-\hfcomment{I'll be putting the carts \& tables here}
+\hfcomment{I'll be putting the carts \& tables here - I'm still working on the spreadsheets}
 
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over \clocode{pmap}. The average gain was x\%, with a range from a\% to b\%.
+We have found that both \clocode{pmap} and reducers decrease the execution time from a serial method by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over \clocode{pmap}. The average gain was x\%, with a range from a\% to b\%.
 
 
 
@@ -294,7 +327,7 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 %
 % ACM needs 'a single self-contained file'!
 %
-\bibliographystyle{plainnat}
+\bibliographystyle{abbrv}
 \bibliography{mics2014reducers}
 
 
