@@ -213,13 +213,15 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}.
 \emcomment{Need background on JVM warmup (and some background on JVM)}
 
 \subsection{Fermat primality test}\label{sec:fermat}
-Two of the tests described rely, at least in part, on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number, which gives a high degree of accuracy for a moderate amount of processing power.
+Two of the tests described rely, at least in part, on determining which numbers in the collection are prime \emcomment{I wouldn't say they rely on it. Centered on?}. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number, which gives a high degree of accuracy for a moderate amount of processing power.
 
 The Fermat primality test relies heavily on exponentiation and modular arithmetic, operations which are relatively expensive for large numbers. The specific mathematics behind the Fermat primality test are tangential to and beyond the scope of this paper. It is only necessary to understand that we chose this test because it is simple to implement, computationally expensive, and an example of a real-world operation which may benefit from Clojure's reducers.
+\emcomment{Would it be useful to mention that the test makes calls to Java library functions and uses bigint (if it indeed uses bigints)?}
 
 \subsubsection{Compare-Count-Primes}\label{sec:count-primes}
 \joecomment{Do we want to say the specific sizes used? 250 runs, 10k coll size, 1b max ele size}
-The first test we describe is an algorithm to determine the number of prime numbers in a large collection of very large numbers. In the baseline implementation, we use a simple reduce operation to count the number of primes:
+\emcomment{yes}
+The first test we describe is an algorithm to determine the number of prime numbers in a large collection of very large numbers \emcomment{randomly generated}. In the baseline implementation, we use a simple reduce operation to count the number of primes:
 
 \begin{verbatim}
 (defn reduce-num-primes
@@ -228,7 +230,9 @@ The first test we describe is an algorithm to determine the number of prime numb
          a))
 \end{verbatim}
 
-Simply, for each element which is found to be prime via the Fermat primality test, we increase the running sum of primes by one (starting from 0). This implementation leverages r/fold, meaning it is a parallel reduce operation.
+Simply, for each element which is found to be prime via the Fermat primality test, we increase the running sum of primes by one (starting from 0). This implementation leverages r/fold, meaning it is a parallel reduce operation. 
+\emcomment{We need to introduce our setup before this, and then just refer to this implementation as the one suitable for map, and the fold-only implementation as something else. I think it's very unclear in this description what's going on and it wouldn't be clear until we explain the goals and the cases of test runs (reduce/map, reduce/pmap, etc)}
+%\emcomment{I am confused: didn't we run all tests with all possible combinations of map/reduce(r/fold)?}
 
 We also tested the pure r/fold implementation against ones that used r/fold only for parallel summation, and computed the primality of values using map or parallel map. In this case, we used this mapping function:
 
@@ -238,6 +242,7 @@ We also tested the pure r/fold implementation against ones that used r/fold only
 \end{verbatim}
 
 Here the work of determining the primality of the numbers is moved into a mapping operation, which returns 1 for each element if prime, or 0 if not. Then we use r/fold to sum the result in parallel. This is simpler from an implementation standpoint, as our mapping function does not have to conform to the restrictions of r/fold, and summation is trivial to use with r/fold.
+
   
 \subsubsection{Compare-Sum-Primes}\label{sec:sum-primes}
 The second test we describe is broadly similar to compare-count-primes, but sums the value of all primes (ignoring composite numbers) rather than simply counting them. This is a more computationally expensive test, since the numbers being summed are very large, rather than 0's and 1's. The purpose of this test is to add computational complexity to the r/fold portion to determine what effect the distribution of work has on running time.
