@@ -226,8 +226,6 @@ The Fermat primality test relies heavily on exponentiation and modular arithmeti
 \emcomment{Would it be useful to mention that the test makes calls to Java library functions and uses bigint (if it indeed uses bigints)?}\joecomment{Maybe. That seems like too much detail, but I could see an argument the other way too. I'm impartial.}
 
 \subsubsection{Compare-Count-Primes}\label{sec:count-primes}
-\joecomment{Do we want to say the specific sizes used? 250 runs, 10k coll size, 1b max ele size}
-\emcomment{yes}
 The first test we describe is an algorithm to determine the number of prime numbers in a large collection of very large randomly generated numbers. In the one-step implementation described above, we use a simple reduce operation to count the number of primes:
 
 \begin{verbatim}
@@ -274,7 +272,18 @@ This test also used a collection of 100,000 random integers uniformly distribute
  
 \subsubsection{Compare-Sum-Sqrt}\label{sec:sum-sqrt}
  
-\hfcomment{info about how this test works}
+The final test we describe utilizes another computationally-expensive algorithm: integer square root. This method of computing a square root returns the floor of the exact square root of a number. Like computing primality, calculating integer square roots is a computationally difficult task, which represents a good opportunity to utilize and measure parallelism. 
+
+To calculate the integer square root, we use a Clojure math library, Clojure Numeric Tower. In our code, we refer to this library as "cljmath."
+
+This test is a straightforward "calculate-and-sum" algorithm, and as such its one-pass reduce function is very basic:
+
+\begin{verbatim}
+(defn reduce-sum-sqrt
+  [a b] (+' a (cljmath/sqrt b)))
+\end{verbatim}
+
+For the multi-step case, our map function is simply the \texttt{cljmath/sqrt} function - we calculate the square root as the map step, and sum the square roots as the reduce step.
  
 This test used a collection of 100,000 random integers uniformly distributed between 0 and 1 billion, and was run 1,000 times.
  
