@@ -190,13 +190,16 @@ The next of the major high-order functions is filter, which takes a predicate (a
 (filter even? '(1 2 3 4 5))
 => '(2 4)
 \end{verbatim}
+We also should talk about vectors - a type of collection in Clojure. As it turns out, some portions of reducers work best on vectors, and we use them frequently. Vectors are a collection of items, indexed by continuous integers. \clocode{count} is an O(1) operation on vectors, and accessing items by index has a $O(log_{32}n)  complexity. 
+\begin{verbatim}
+(get [1 2 3 4 5] 2)
+=> 3
+\end{verbatim}
 \emcomment{Need: prefix syntax, explain higher order functions, explain map, reduce, fold, filter. Explain vectors (briefly) since our stuff only works on vectors}
 
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
-
-
-
+ Lately, processing speed has plateaued - and in order to maintain throughput growth, processors are being built multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write it's value. This approach, while it may be more efficient, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. In immutable state systems, this is prevented by having the thread create a new instance of the resource as soon as it is able to access the resource. In Clojure, nearly all data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign.
 
 \subsection{Introduction to pmap}\label{sec:pmap}
 
@@ -288,7 +291,7 @@ For the multi-step case, our map function is simply the \texttt{cljmath/sqrt} fu
 This test used a collection of 100,000 random integers uniformly distributed between 0 and 1 billion, and was run 1,000 times.
  
  \subsection{Execution Methodology}\label{sec:eMethods}
- Following the method shown above, we ran the tests on several different machines referred to as box1, box2, and box3.
+ Following the methods shown above, we ran the tests on several different machines referred to as box1, box2, and box3.
  
 \begin{itemize}
  \item 
@@ -301,17 +304,16 @@ This test used a collection of 100,000 random integers uniformly distributed bet
   
 The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
 
-
-
-
-\subsection{Tests}\label{sec:tests}
-\emcomment{Describe the tests. Joe, this should be your section for the most part, although Henry changed some of the outputs and added more cases}
-
 \emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
 \subsection{Results}\label{sec:results}
 In this section we show the results of running our tests across the machines mentioned above;
-\hfcomment{I'll be putting the carts \& tables here - I'm still working on the spreadsheets}
+
+<Table of average times>
+
+\subsubsection{Results for Box 1}\label{sec:box1}
+\subsubsection{Results for Box 2}\label{sec:box2}
+\subsubsection{Results for Box 3}\label{sec:box3}
 
 
 \subsection{Discussion}\label{sec:discussion}
