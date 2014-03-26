@@ -199,7 +199,7 @@ We also should talk about vectors - a type of collection in Clojure. As it turns
 
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
- Lately, processing speed has plateaued - and in order to maintain throughput growth, processors are being built multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write it's value. This approach, while it may be more efficient, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. In immutable state systems, this is prevented by having the thread create a new instance of the resource as soon as it is able to access the resource. In Clojure, nearly all data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign.
+ Lately, processing speed has plateaued - and in order to maintain throughput growth, processors are being built multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write it's value. This approach, while it may be more efficient, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
 
 \subsection{Introduction to pmap}\label{sec:pmap}
 
@@ -209,7 +209,7 @@ We also should talk about vectors - a type of collection in Clojure. As it turns
 \subsection{Introduction to reducers}\label{sec:reducers}
 Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. 
 
-\section{Efficiency of parallel methods in Clojure}\label{sec:efficiency}
+\section{Efficiency of parallel methods in Clojure}\label{sec:efficiency} 
 
 \subsection{Test Methodology}\label{sec:methods}
  
