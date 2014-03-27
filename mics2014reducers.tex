@@ -218,19 +218,23 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}.
 
 \subsection{Test Structure}\label{sec:testStruct}
 To determine the performance implications of the new reducers library, we have split each of our tests into two sections. First, we run the test using Clojure's multi-threaded reduce, r/fold, which computes the entire result in one operation. Then, we run the test using a two-step process: first, a map operation which prepares values for reduction, followed by a reduce operation which combines the values computed in the first step. This two-step method allows us to shift where and how the most processing power is used, and to determine what combination of elements is most efficient.
+\emcomment{While this does indeed describe our tests, I wonder if we can make it clearer by using an itemized list or a table or some such: it's *very* difficult to get this information from reading this paragraph. We also do r/fold + r/map, I am not sure it is included here.}
 
 The one-step testing method is always single-threaded, using Clojure's built-in reduce function. The two-step method tests all combinations of single- and multi-threaded, using both the serial map and reduce, as well as the parallel pmap, r/map and r/fold.
 
 Since the requirements for parallelizing reduce are more strict than for parallelizing map, this many-part methodology allows us to analyze not only running time, but also to determine whether parallel reduction offers such a speedup over single-threaded or parallel map-based solutions so as to warrant the additional overhead of coding it.
 
+\emcomment{We also need to say that we run all of these tests in the same data.}
+
 \subsection{Fermat primality test}\label{sec:fermat}
-Two of the tests described are centered on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number, which gives a high degree of accuracy for a moderate amount of processing power.
+Two of the tests described \emcomment{The word "test" is ambiguous: it refers to both a test configuration (e.g. reduce + map) and a chunk of code we are testing (e.g. primality test). Perhaps referring formally introducing terminology for this distinction (test vs configuration) would be helpful.} are centered on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number \emcomment{is it up to 5? Because if it's composite, it may finish earlier, right?}, which gives a high degree of accuracy for a moderate amount of processing power.
+\emcomment{Here we need to mention that we are using very large integers (give the order) because that explains why it's computationally expensive and why it's real-world (on smaller numbers there are faster primality tests)}
 
 The Fermat primality test relies heavily on exponentiation and modular arithmetic, operations which are relatively expensive for large numbers. The specific mathematics behind the Fermat primality test are tangential to and beyond the scope of this paper. It is only necessary to understand that we chose this test because it is simple to implement, computationally expensive, and an example of a real-world operation which may benefit from Clojure's reducers.
 \emcomment{Would it be useful to mention that the test makes calls to Java library functions and uses bigint (if it indeed uses bigints)?}\joecomment{Maybe. That seems like too much detail, but I could see an argument the other way too. I'm impartial.}
 
 \subsubsection{Compare-Count-Primes}\label{sec:count-primes}
-The first test we describe is an algorithm to determine the number of prime numbers in a large collection of very large randomly generated numbers. In the one-step implementation described above, we use a simple reduce operation to count the number of primes:
+The first test we describe is an algorithm to determine the number of prime numbers in a large collection of very large randomly generated numbers \emcomment{Mentioning such numbers should be moved to the general discussion of Fermat test}. In the one-step implementation described above, we use a simple reduce operation to count the number of primes:
 
 \begin{verbatim}
 (defn reduce-num-primes
