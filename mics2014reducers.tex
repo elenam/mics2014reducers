@@ -255,6 +255,7 @@ As described previously, we also tested the pure r/fold implementation against o
 Here the work of determining the primality of the numbers is moved into a mapping operation, which returns 1 for each element if prime, or 0 if not. Then we use r/fold to sum the result in parallel. This is simpler from an implementation standpoint, as our mapping function does not have to conform to the restrictions of r/fold, and summation is trivial to use with r/fold.\joecomment{Is this redundant now with the section describing our test structure?}
 
 The data used for this test is a collection of 100,000 random integers uniformly distributed between 0 and 1 billion. This test was run 100 times. \joecomment{Does this belong in a table? If so, someone else want to do it? :) Never done a LaTeX table and not too excited to learn...}
+\emcomment{Yes -- No (I don't want to) -- will do.}
 
   
 \subsubsection{Compare-Sum-Primes}\label{sec:sum-primes}
