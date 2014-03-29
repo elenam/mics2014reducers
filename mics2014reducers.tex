@@ -55,6 +55,7 @@
 \usepackage{parskip}
 
 
+
 %% Elena's favorite green (thanks, Fernando!)
 \definecolor{ForestGreen}{RGB}{34,139,34}
 \definecolor{JoesGold}{RGB}{204,102,0}
@@ -151,55 +152,47 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 
 \section{Background}\label{sec:background}
 
-
-
-
 \subsection{Clojure}\label{sec:clojure}
-Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine. Leveraging the widespread nature of the jvm, Clojure can run on any \hfcomment{is that true?} environment that supports the JVM. 
+Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine. Leveraging the widespread nature of the jvm, Clojure can run on any environment that supports the JVM. 
 
 The Lisp family of languages have several features in common, the most visible of which is the polish-prefix notation. Cojure, as a lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, 
 \begin{verbatim}
 (+ 2 3)
 => 5
 \end{verbatim}
-Functions in Lisp are created using the \clocode{defn} macro. It is useful to note that \clocode{defn} is short for \clocode{def} (define) \clocode{fn}, where fn is a common abbreviation of function in the Lisp community.
-\hfcomment{Fishing for feedback on the above line - I don't like it.}
+Functions in Clojure are created using the \clocode{defn} macro, which has the basic syntax \clocode{(defn name [args] body)}.
 \begin{verbatim}
 (defn add1 [num] (+ num 1))
 (add1 4)
 => 5
-\end{verbatim}
- Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments
-\begin{verbatim}
-(defn apply-fn [a-function an-arg] (a-function an-arg))
-(apply-fn add1 4)
-=> 5
-\end{verbatim}
-Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection.
-\begin{verbatim}
-(map add1 '(0 1 2 3 4))
-=>'(1 2 3 4 5)
-\end{verbatim}
-Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
-\begin{verbatim}
-(reduce +  '(1 2 3))
-=>6
-\end{verbatim}
-The next of the major high-order functions is filter, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
-\begin{verbatim}
-(filter even? '(1 2 3 4 5))
-=> '(2 4)
-\end{verbatim}
-We also should talk about vectors - a type of collection in Clojure. As it turns out, some portions of reducers work best on vectors, and we use them frequently. Vectors are a collection of items, indexed by continuous integers. \clocode{count} is an O(1) operation on vectors, and accessing items by index has a $O(log_{32}n)$  complexity. 
+\end{verbatim} 
+We should talk about vectors - a type of collection in Clojure. As it turns out, some portions of reducers work best on vectors, and we use them frequently. Vectors are a collection of items, indexed by continuous integers: accessing items by index has a $O(log_{32}n)$  complexity. They are denoted by \clocode{[brackets]}.
 \begin{verbatim}
 (get [1 2 3 4 5] 2)
 => 3
 \end{verbatim}
+ Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
+\begin{verbatim}
+(map add1 [0 1 2 3 4])
+=>(1 2 3 4 5)
+\end{verbatim}
+
+Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
+\begin{verbatim}
+(reduce + [1 2 3])
+=>6
+\end{verbatim}
+The next of the major high-order functions is filter, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
+\begin{verbatim}
+(filter even? [1 2 3 4 5])
+=>(2 4)
+\end{verbatim}
+
 \emcomment{Need: prefix syntax, explain higher order functions, explain map, reduce, fold, filter. Explain vectors (briefly) since our stuff only works on vectors}
 
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
- Lately, processing speed has plateaued\emcomment{Need to explain this} - and in order to maintain throughput growth, processors are being built multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write its value. This approach, while it may be more efficient \emcomment{more efficient than what? Perhaps "while designed for efficiency"?}, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
+ Lately, processor clock speed has plateaued - simply running the CPU faster - is no longer a viable option in the eyes of hardware designers. In order to maintain throughput growth, processors are now being built with multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write its value. This approach, while designed for efficiency, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
 \emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}
 
 \subsection{Introduction to pmap}\label{sec:pmap}
@@ -300,11 +293,11 @@ This test used a collection of 100,000 random integers uniformly distributed bet
  
 \begin{itemize}
  \item 
- Box 1 has a Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7.
+ Box 1 has an Intel i7 (4700MQ) cpu, with 4 hyperthreaded cores, running Windows 7.
  \item
- Box 2 has a Intel i5 (650) cpu, with 4 cores, running Fedora 18.
+ Box 2 has an Intel i5 (650) cpu, with 4 cores, running Fedora 18.
  \item
- Box 3 has a xyz cpu, with q cores, running foo OS. Box 1 has a xzy cpu, with q cores, running foo OS.
+ Box 3 has an AMD FX-8350, with 8 cores, running Fedora 18. 
  \end{itemize}
   
 The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
@@ -316,9 +309,11 @@ In this section we show the results of running our tests across the machines men
 
 <Table of average times>
 
-\subsubsection{Results for Box 1}\label{sec:box1}
-\subsubsection{Results for Box 2}\label{sec:box2}
-\subsubsection{Results for Box 3}\label{sec:box3}
+A typical mode was to find that the distributon was in two peaks - the serial methods and the parallel methods; 
+
+\includegraphics[trim = 10mm 0mm 30mm 0mm, clip, width = 16cm,height = 10cm]{PSP-B1}
+\includegraphics[trim = 10mm 0mm 10mm 5mm, clip, width = 16cm,height = 12cm]{SSP-B1}
+
 
 
 \subsection{Discussion}\label{sec:discussion}
