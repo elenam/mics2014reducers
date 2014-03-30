@@ -210,9 +210,9 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. 
 
 \subsection{Test Structure}\label{sec:testStruct}
 To determine the performance implications of the new reducers library, we have split each of our tests into two sections. First, we run the test using Clojure's multi-threaded reduce, r/fold, which computes the entire result in one operation. Then, we run the test using a two-step process: first, a map operation which prepares values for reduction, followed by a reduce operation which combines the values computed in the first step. This two-step method allows us to shift where and how the most processing power is used, and to determine what combination of elements is most efficient.
-\emcomment{While this does indeed describe our tests, I wonder if we can make it clearer by using an itemized list or a table or some such: it's *very* difficult to get this information from reading this paragraph. We also do r/fold + r/map, I am not sure it is included here.}
+\emcomment{While this does indeed describe our tests, I wonder if we can make it clearer by using an itemized list or a table or some such: it's *very* difficult to get this information from reading this paragraph. We also do r/fold + r/map, I am not sure it is included here.}\joecomment{Might make sense to have a table of all operations - name, "type" (map vs reduce) and whether it is single- or multi-threaded?}
 
-The one-step testing method is always single-threaded, using Clojure's built-in reduce function. The two-step method tests all combinations of single- and multi-threaded, using both the serial map and reduce, as well as the parallel pmap, r/map and r/fold.
+The one-step testing method is always multi-threaded, using the new reducers library. The two-step method tests all combinations of single- and multi-threaded, using both serial map and reduce, as well as parallel pmap, r/map and r/fold.
 
 Since the requirements for parallelizing reduce are more strict than for parallelizing map, this many-part methodology allows us to analyze not only running time, but also to determine whether parallel reduction offers such a speedup over single-threaded or parallel map-based solutions so as to warrant the additional overhead of coding it.
 
