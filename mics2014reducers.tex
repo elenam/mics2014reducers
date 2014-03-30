@@ -171,7 +171,7 @@ We should talk about vectors - a type of collection in Clojure. As it turns out,
 (get [1 2 3 4 5] 2)
 => 3
 \end{verbatim}
- Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
+Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
 \begin{verbatim}
 (map add1 [0 1 2 3 4])
 =>(1 2 3 4 5)
@@ -180,34 +180,33 @@ We should talk about vectors - a type of collection in Clojure. As it turns out,
 Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
 \begin{verbatim}
 (reduce + [1 2 3])
-=>6
+=> 6
 \end{verbatim}
 The next of the major high-order functions is filter, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
 \begin{verbatim}
 (filter even? [1 2 3 4 5])
-=>(2 4)
+=> (2 4)
 \end{verbatim}
-
-\emcomment{Need: prefix syntax, explain higher order functions, explain map, reduce, fold, filter. Explain vectors (briefly) since our stuff only works on vectors}
-
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
  Lately, processor clock speed has plateaued - simply running the CPU faster - is no longer a viable option in the eyes of hardware designers. In order to maintain throughput growth, processors are now being built with multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write its value. This approach, while designed for efficiency, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
-\emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}
+\emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}\hfcomment{I don't know about that side of clojure - I'll leave it to you.}
 
 \subsection{Introduction to pmap}\label{sec:pmap}
-
-
-
+\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguements as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
+\begin{verbatim}
+(pmap add1 [1 2 3 4])
+=> (2 3 4 5)
+\end{verbatim}
+Importantly, \clocode{pmap} is semi-lazy; it will only evaluate as needed, or if strictly forced to evaluate by \clocode{doall}. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation.
+\begin{verbatim}
+(doall (pmap [1 2 3 4])) 
+=> (2 3 4 5)
+\end{verbatim}
 
 \subsection{Introduction to reducers}\label{sec:reducers}
-Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. 
-
+Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. Reducers provides higher-order functions for the manipulation of collections, focusing on concurrent versions of the native high-order functions.  Built on Java's ForkJoin framework, Reducers uses the same data structures as the original functions, allowing drop-in replacement for many use cases.
 \section{Efficiency of parallel methods in Clojure}\label{sec:efficiency} 
-
-\subsection{Test Methodology}\label{sec:methods}
- 
-\emcomment{Need background on JVM warmup (and some background on JVM)}
 
 \subsection{Test Structure}\label{sec:testStruct}
 To determine the performance implications of the new reducers library, we have split each of our tests into two sections. First, we run the test using Clojure's multi-threaded reduce, r/fold, which computes the entire result in one operation. Then, we run the test using a two-step process: first, a map operation which prepares values for reduction, followed by a reduce operation which combines the values computed in the first step. This two-step method allows us to shift where and how the most processing power is used, and to determine what combination of elements is most efficient.
@@ -269,7 +268,7 @@ The mapping function used during the second stage of testing is similarly simple
   [x] (if (p/fermat-test x 5) x 0))
 \end{verbatim}
 
-This test also used a collection of 100,000 random integers uniformly distributed between 0 and 1 billion, but was run 1,000 times.
+This test also used a collection of 10,000 random integers uniformly distributed between 0 and 1 billion, but was run 1,000 times.
  
 \subsubsection{Compare-Sum-Sqrt}\label{sec:sum-sqrt}
  
@@ -308,7 +307,7 @@ The full set of tests was run three times on each machine. The first run is disc
 In this section we show the results of running our tests across the machines mentioned above;
 
 <Table of average times>
-
+ 
 A typical mode was to find that the distributon was in two peaks - the serial methods and the parallel methods; 
 
 \includegraphics[trim = 10mm 0mm 30mm 0mm, clip, width = 16cm,height = 10cm]{PSP-B1}
@@ -317,10 +316,7 @@ A typical mode was to find that the distributon was in two peaks - the serial me
 
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that both \clocode{pmap} and reducers decrease the execution time from a serial method by a factor of the number of cores, as expected. The Reducers library was found to provide a significant performance gain, in all situations, over \clocode{pmap}. The average gain was x\%, with a range from a\% to b\%.
-
-
-
+We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components ~\cite{McIntyre:2012} was a factor. \clocode{pmap}, when properly executing in parallel was somewhat slower, but was often executing in serial time. In several instances \clocode{pmap} was up to x\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
