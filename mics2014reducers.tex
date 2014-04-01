@@ -233,32 +233,40 @@ pmap + reduce & parallel map, serial reduce \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Tests include various serial and parallel combinations}\label{table:tests}
+\caption{Configurations for our tests}\label{table:tests}
 \end{table}
 
-The one-step testing method is always multi-threaded, using the new reducers library. The two-step method tests all combinations of single- and multi-threaded, using both serial map and reduce, as well as parallel pmap, r/map and r/fold. We call each unique combination of functions a \emph{configuration}. Configurations, in turn, make up the two sections described, and those sections comprise the overall test.
+The one-step testing method is always multi-threaded, using the new reducers library. \emcomment{In the table it's easier to refer to these cases as parallel and serial. Would it be reasonable to use this in the text as well?} The two-step method tests all combinations of single- and multi-threaded, using both serial map and reduce, as well as parallel pmap, r/map and r/fold. We call each unique combination of functions a \emph{configuration}. Configurations, in turn, make up the two sections described, and those sections comprise the overall test.\emcomment{The previous paragraph and this one should be combined and streamlined: it would be better to introduce the term "configuration" first, and then discuss various configurations.}
 
-Since the requirements for parallelizing reduce are more strict than for parallelizing map, this many-part methodology allows us to analyze not only running time, but also to determine whether parallel reduction offers such a speedup over single-threaded or parallel map-based solutions so as to warrant the additional overhead of coding it.
+Since the requirements for parallelizing reduce are more strict than for parallelizing map, this many-part methodology allows us to analyze not only running time, but also to determine whether parallel reduction offers such a speedup over single-threaded or parallel map-based solutions so as to warrant the additional overhead of coding it. \emcomment{I really don't think this is an issue: it's really not involved at all}
 
-When executing a test, each configuration is run on the same set of data. Additionally, each test is run many times on different data. The input data used for all three tests we describe consists of large collections of very large, uniformly distributed, randomly generated integers. The exact specifications for each test are listed in Table X \todo{Reference the table once it exists}\joecomment{Henry - Please correct if this is wrong in some way.}
+When executing a test, each configuration is run on the same set of data. Additionally, each test is run many times on different data.
+\emcomment{These two sentences are confusing. We run each test on the same randomly generated data in each configuration, and we repeat this process many(?) times?} 
+The input data used for all three tests we describe consists of large collections of very large, uniformly distributed, randomly generated integers. The exact specifications for each test are listed in Table X \todo{Reference the table once it exists}\joecomment{Henry - Please correct if this is wrong in some way.}
+\emcomment{It would be better to reference the table earlier and walk the reader through it in this section}
 
 \subsection{Fermat primality test}\label{sec:fermat}
-Two of the tests described are centered on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We use 5 trials per number \emcomment{is it up to 5? Because if it's composite, it may finish earlier, right?}\joecomment{True, although I'm not sure that distinction is useful for this paper. I think that may introduce confusion.}, which gives a high degree of accuracy for a moderate amount of processing power.
+Two of the tests described are centered on determining which numbers in the collection are prime. Specifically, we use a probabilistic algorithm called the \emph{Fermat primality test}, which takes two parameters: a number to test for primality, and an integer that determines the number of trials to be run. The higher the number of trials, the more precise the result and the more processing power used. We set the maximum number of trials per number to 5 trials, which gives a high degree of accuracy for a moderate amount of processing power. Fermat primality test is used for very large numbers since faster algorithms exist for smaller numbers. We use numbers on the order of \emcomment{Need to fill this in}
+%\emcomment{is it up to 5? Because if it's composite, it may finish earlier, right?}\joecomment{True, although I'm not sure that distinction is useful for this paper. I think that may introduce confusion.}
 
-The Fermat primality test relies heavily on exponentiation and modular arithmetic, operations which are relatively expensive for large numbers (we use integers between zero and one billion). The specific mathematics behind the Fermat primality test are tangential to and beyond the scope of this paper. It is only necessary to understand that we chose this test because it is simple to implement, computationally expensive, and an example of a real-world operation which may benefit from Clojure's reducers. These assertions all hinge on the fact that we use the Fermat primality test on large numbers (for small numbers, there are faster primality tests).
-\emcomment{Would it be useful to mention that the test makes calls to Java library functions and uses bigint (if it indeed uses bigints)?}\joecomment{Maybe. That seems like too much detail, but I could see an argument the other way too. I'm impartial.}
+The Fermat primality test relies heavily on exponentiation and modular arithmetic, operations which are relatively expensive for large numbers (we use integers between zero and one billion). The specific mathematics behind the Fermat primality test are tangential to and beyond the scope of this paper. The reasons this test was chosen is 
+%It is only necessary to understand that we chose this test 
+because it is simple to implement, computationally expensive, and an example of a real-world operation which may benefit from Clojure's reducers. 
+%These assertions all hinge on the fact that we use the Fermat primality test on large numbers (for small numbers, there are faster primality tests).
+%\emcomment{Would it be useful to mention that the test makes calls to Java library functions and uses bigint (if it indeed uses bigints)?}\joecomment{Maybe. That seems like too much detail, but I could see an argument the other way too. I'm impartial.}
 
 \subsubsection{Compare-Count-Primes}\label{sec:count-primes}
 The first test we describe is an algorithm to determine the number of prime integers in a  collection of integers. In the one-step implementation described above, we use a simple reduce operation to count the number of primes:
 
 \begin{verbatim}
-(defn reduce-num-primes
-  [a b] (if (p/fermat-test b 5)
+(defn reduce-num-primes [a b] 
+   (if (p/fermat-test b 5)
          (inc a)
          a))
 \end{verbatim}
 
 Simply, for each element which is found to be prime via the Fermat primality test, we increase the running sum of primes by one (starting from 0). This implementation leverages r/fold, meaning it is a parallel reduce operation. 
+\emcomment{Need to explain what a and b are and other notations (p/fermat-test, have we defined inc?) }
 
 As described previously, we also tested the pure r/fold implementation against configurations that used varying combinations of reduction and mapping functions. In these cases, we used this mapping function:
 
