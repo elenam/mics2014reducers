@@ -271,8 +271,8 @@ Simply, for each element which is found to be prime via the Fermat primality tes
 As described previously, we also tested the pure r/fold implementation against configurations that used varying combinations of reduction and mapping functions. In these cases, we used this mapping function:
 
 \begin{verbatim}
-(defn count-primes-pre-reducer
-  [x] (if (p/fermat-test x 5) 1 0))
+(defn count-primes-pre-reducer [x] 
+    (if (p/fermat-test x 5) 1 0))
 \end{verbatim}
 
 Here the work of determining the primality of the numbers is moved into a mapping operation, which returns 1 for each element if prime, or 0 if not. Then we use r/fold to sum the result in parallel. This is simpler from an implementation standpoint, as our mapping function does not have to conform to the restrictions of r/fold, and summation is trivial to use with r/fold.\joecomment{Is this redundant now with the section describing our test structure?}
@@ -288,8 +288,8 @@ First, there is our basic, all-in-one reduce function:
 
 \joecomment{We may want to describe + vs +' in Clojure prior to this}
 \begin{verbatim}
-(defn reduce-sum-primes
-  [a b] (if (p/fermat-test b 5)
+(defn reduce-sum-primes [a b]
+  (if (p/fermat-test b 5)
          (+' a b)
          a))
 \end{verbatim}
@@ -297,8 +297,8 @@ First, there is our basic, all-in-one reduce function:
 The mapping function used during the second stage of testing is similarly simple:
 
 \begin{verbatim}
-(defn sum-primes-pre-reducer
-  [x] (if (p/fermat-test x 5) x 0))
+(defn sum-primes-pre-reducer [x] 
+    (if (p/fermat-test x 5) x 0))
 \end{verbatim}
 
 This test also used a collection of 10,000 random integers uniformly distributed between 0 and 1 billion, but was run 1,000 times.
@@ -312,8 +312,8 @@ To calculate the integer square root, we use a Clojure math library, Clojure Num
 This test is a straightforward "calculate-and-sum" algorithm, and as such its one-pass reduce function is very basic:
 
 \begin{verbatim}
-(defn reduce-sum-sqrt
-  [a b] (+' a (cljmath/sqrt b)))
+(defn reduce-sum-sqrt [a b] 
+    (+' a (cljmath/sqrt b)))
 \end{verbatim}
 
 For the multi-step configurations, our map function is simply the \texttt{cljmath/sqrt} function - we calculate the square root as the map step, and sum the square roots as the reduce step.
