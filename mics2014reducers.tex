@@ -174,13 +174,14 @@ We should talk about vectors \emcomment{too informal: change to something like "
 (get [1 2 3 4 5] 2)
 => 3
 \end{verbatim}
-Lisps also have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
+Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in Clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
+\emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
 \begin{verbatim}
 (map add1 [0 1 2 3 4])
 =>(1 2 3 4 5)
 \end{verbatim}
 
-Clojure also includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
+Clojure includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. \emcomment{I don't think this is how it works: it applies the function to an element and the result of the application to the rest of the collection. I also think that saying that it uses a function to compute a single value from all elements of the collection is sufficient.} It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
 \begin{verbatim}
 (reduce + [1 2 3])
 => 6
@@ -192,16 +193,19 @@ The next of the major high-order functions is filter, which takes a predicate (a
 \end{verbatim}
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
- Lately, processor clock speed has plateaued - simply running the CPU faster - is no longer a viable option in the eyes of hardware designers. In order to maintain throughput growth, processors are now being built with multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads that wish to access a shared resource require exclusive access before they can attempt to read or write its value. This approach, while designed for efficiency, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
-\emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}\hfcomment{I don't know about that side of clojure - I'll leave it to you.}
+ Lately, processor clock speed has plateaued - simply running the CPU faster - is no longer a viable option in the eyes of hardware designers.
+\emcomment{The grammatical structure of this sentence needs to change.}
+In order to maintain throughput growth, processors are now being built with multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads \emcomment{introduce terminology: process, thread} that wish to access a shared resource require exclusive access before they can attempt to read or write  an updated value. This approach, while designed for efficiency, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
+\emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}\hfcomment{I don't know about that side of Clojure - I'll leave it to you.}
+\emcomment{Will do}
 
 \subsection{Introduction to pmap}\label{sec:pmap}
-\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguements as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
+\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguments as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
 \begin{verbatim}
 (pmap add1 [1 2 3 4])
 => (2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it will only evaluate as needed, or if strictly forced to evaluate by \clocode{doall}. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation.
+Importantly, \clocode{pmap} is semi-lazy; it will only evaluate as needed, or if strictly forced to evaluate by \clocode{doall}. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. \emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
 \begin{verbatim}
 (doall (pmap [1 2 3 4])) 
 => (2 3 4 5)
@@ -209,9 +213,11 @@ Importantly, \clocode{pmap} is semi-lazy; it will only evaluate as needed, or if
 
 \subsection{Introduction to reducers}\label{sec:reducers}
 Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. Reducers provides higher-order functions for the manipulation of collections, focusing on concurrent versions of the native high-order functions.  Built on Java's ForkJoin framework, Reducers uses the same data structures as the original functions, allowing drop-in replacement for many use cases.
+\emcomment{Elena's section}
+
 \section{Efficiency of parallel methods in Clojure}\label{sec:efficiency} 
 
-\subsection{Test Structure}\label{sec:testStruct}
+\subsection{Test structure}\label{sec:testStruct}
 To determine the performance implications of the new reducers library, we have split each of our tests into two sections. First, we run the test using Clojure's multi-threaded reduce, r/fold, which computes the entire result in one operation. Then, we run the test using a two-step process: first, a map operation which prepares values for reduction, followed by a reduce operation which combines the values computed in the first step. This two-step method allows us to shift where and how the most processing power is used, and to determine what combination of elements is most efficient.
 \emcomment{While this does indeed describe our tests, I wonder if we can make it clearer by using an itemized list or a table or some such: it's *very* difficult to get this information from reading this paragraph. We also do r/fold + r/map, I am not sure it is included here.}\joecomment{Might make sense to have a table of all operations - name, "type" (map vs reduce) and whether it is single- or multi-threaded?}
 
