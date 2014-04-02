@@ -194,6 +194,7 @@ The next of the major high-order functions is \clocode{filter}, which takes a pr
 (filter even? [1 2 3 4 5])
 => (2 4)
 \end{verbatim}
+\emcomment{Explain the concept of laziness since you use it later}
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
  Lately, processor clock speed has plateaued - simply running the CPU faster - is no longer a viable option in the eyes of hardware designers.
@@ -213,7 +214,8 @@ Clojure uses immutable datatypes by default; the value of an immutable datatype 
 (pmap add1 [1 2 3 4])
 => (2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it essentially tries to use as little parallel processing as possible, only returning results as needed. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation) in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+Importantly, \clocode{pmap} is semi-lazy; it %essentially 
+tries to use as little parallel processing as possible, only returning results as needed \emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation) in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
