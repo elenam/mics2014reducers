@@ -209,7 +209,7 @@ Clojure also uses immutable datatypes frequently; the value of an immutable data
 (pmap add1 [1 2 3 4])
 => (2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it essentially tries to use as little parallel processing as possible, only returning results as needed. If strictly forced to evaluate by \clocode{doall}, pmap will be requested to return the entire expression immediately (i.e eager evaluation), and will then run fully in parallel.  \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+Importantly, \clocode{pmap} is semi-lazy; it essentially tries to use as little parallel processing as possible, only returning results as needed. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation) in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
