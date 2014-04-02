@@ -153,37 +153,43 @@ Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2
 The Lisp family of languages have several features in common, the most visible of which is the polish-prefix notation. Cojure, as a Lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, after interpretation, 
 \begin{verbatim}
 (+ 2 3)
-; '=>' signifies the result.
 => 5
 \end{verbatim}
-\emcomment{explain the notation (=> is the result - have you mentioned that it is interpreted?), also explain that + is a function}
-Functions in Clojure are created using the \clocode{defn} macro, which has the basic syntax \clocode{(defn name [args] body)}.
+%\emcomment{explain the notation (=> is the result - have you mentioned that it is interpreted?), also explain that + is a function}
+Here \clocode{=>} denotes the Clojure interpreter response, so \clocode{(+ 2 3)}, when typed in the Clojure interpreter, evaluates to 5. %otherwise you'd need to explain ; as comment
+Note that \clocode{+} in Clojure is a function, and not an operation, as in C or Java. 
+
+Functions in Clojure are created using the \clocode{defn} macro, which has the basic syntax \clocode{(defn name [args] body)}, where \clocode{name} is the function's name, \clocode{args} are function arguments listed with spaces in-between, and \clocode{body} is the body of the function. 
 \begin{verbatim}
 (defn add1 [num] (+ num 1))
 (add1 4)
 => 5
 \end{verbatim} 
-\emcomment{Walk the reader through the example: num is a parameter, (+ num 1) is a body, the next line is a function application.}
-Below we introduce vectors, an important Clojure data type for our discussion - a type of collection in Clojure. Vectors are a collection of items, indexed by continuous integers: accessing items by index has a $O(log_{32}n)$  complexity. They are denoted by 
+%\emcomment{Walk the reader through the example: num is a parameter, (+ num 1) is a body, the next line is a function application.}
+The first line in the above example defines the function \clocode{add1}, and the second line applies it to 4. 
+
+Below we introduce vectors, an important Clojure data type for our discussion -- a type of collection in Clojure. Vectors are a collection of items, indexed by continuous integers: accessing items by index has a $O(log_{32}n)$  complexity. They are denoted by 
 \clocode{[brackets]}.
 \begin{verbatim}
 (get [1 2 3 4 5] 2)
 => 3
 \end{verbatim}
-Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in Clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
-\hfcomment{collections in clojure are basically magic.  I realized I have no idea what is going on.}
-\emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
+\emcomment{explain what get does. Remember, most of your target audience have never seen a Lisp-like language}
+Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection, returning the resulting collection. The type of the collection that gets returned is not a vector, but a more general collection type, so it is included in parentheses, and not brackets. However, for the most part this distinction is not important for our discussion. 
+%Note that collections in Clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
+%\hfcomment{collections in clojure are basically magic.  I realized I have no idea what is going on.}
+%\emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
 \begin{verbatim}
 (map add1 [0 1 2 3 4])
 =>(1 2 3 4 5)
 \end{verbatim}
 
-Clojure includes \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. \emcomment{I don't think this is how it works: it applies the function to an element and the result of the application to the rest of the collection. I also think that saying that it uses a function to compute a single value from all elements of the collection is sufficient.} It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
+Clojure pre-defined functions include \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. \emcomment{I don't think this is how it works: it applies the function to an element and the result of the application to the rest of the collection. I also think that saying that it uses a function to compute a single value from all elements of the collection is sufficient.} It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
 \begin{verbatim}
 (reduce + [1 2 3])
 => 6
 \end{verbatim}
-The next of the major high-order functions is filter, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
+The next of the major high-order functions is \clocode{filter}, which takes a predicate (a function that returns a boolean and has no side-effects) and a collection and returns a new collection of the items in the original collection for which the predicate (when applied to the item) returns true.
 \begin{verbatim}
 (filter even? [1 2 3 4 5])
 => (2 4)
@@ -196,9 +202,10 @@ In order to maintain throughput growth, processors are now being built with mult
 
 Programming concurrent programs is hard, especially the issue of shared resources (commonly memory). Simply speaking, having two parts of a program access one resource at the same time can casue problems. Modern concurrency systems use some sort of access management to prevent this, by giving one thread exclusive access to a resouce while the thread reads or writes to it. Unfortunately, this model can cause problems such as deadlocking, where two tasks are waiting for resources that the other task holds. If not resolved, both threads will wait forever. In contrast to this model, Clojure uses Software Transactional Memory. STM is a method of managing shared resources without using locking; every thread can modify a shared resource without regard for the action of other threads. When a thread accesses a resource, it records it's actions in a log; near the end of the transaction, is checks to see if another thread has modified the resouce. If the resource has been accessed, it restarts, and attempts to successfully modify the resource again.
 
-Clojure also uses immutable datatypes frequently; the value of an immutable datatype cannot be changed after it has been created. New copies of an object are created every time the object is modified, making it impossible for threads to modify objects as they are read. is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
+Clojure uses immutable datatypes by default; the value of an immutable datatype cannot be changed after it has been created. New copies of an object are created every time the object is modified, making it impossible for threads to modify objects as they are read. is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
 \emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}\hfcomment{I don't know about that side of Clojure - I'll leave it to you.}
 \emcomment{Will do}
+
 
 \subsection{Introduction to pmap}\label{sec:pmap}
 \clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguements as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
@@ -211,7 +218,7 @@ Importantly, \clocode{pmap} is semi-lazy; it essentially tries to use as little 
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
 ;because doall forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four).
-(time (doall (pmap [1 2 3 4])))
+(time (doall (pmap  expensive-function  [1 2 3 4])))
 => 3000 ms
 \end{verbatim}
 
