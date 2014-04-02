@@ -195,21 +195,31 @@ The next of the major high-order functions is filter, which takes a predicate (a
 \subsection{Introduction to concurrency}\label{sec:concurrency}
  Lately, processor clock speed has plateaued - simply running the CPU faster - is no longer a viable option in the eyes of hardware designers.
 \emcomment{The grammatical structure of this sentence needs to change.}
-In order to maintain throughput growth, processors are now being built with multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously; the most common mode of which is parallel execution, where one task is distributed over multiple logical processors. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. The most common approach to concurrency is the mutable state model, where threads \emcomment{introduce terminology: process, thread} that wish to access a shared resource require exclusive access before they can attempt to read or write  an updated value. This approach, while designed for efficiency, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. To make concurrent programming easier, Clojure features an immutable state system. In immutable state systems, threads create a new instance of a shared resource every time an attempt is made to access it, allowing multiple threads to access the resource. All data is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
+In order to maintain throughput growth, processors are now being built with multiple cores. In order to be able to effectively use modern processors, programmers must begin to use concurrency. Concurrency is simply the execution of multiple computations simultaneously. Most programming languages support concurrent programming, but many provide poor support, or have awkward interfaces. 
+
+Programming concurrent programs is hard, especially the issue of shared resources (commonly memory). Simply speaking, having two parts of a program access one resource at the same time can casue problems. Modern concurrency systems use some sort of access management to prevent this, by giving one thread exclusive access to a resouce while the thread reads or writes to it. Unfortunately, this model can cause problems such as deadlocking, where two tasks are waiting for resources that the other task holds. If not resolved, both threads will wait forever. In contrast to this model, Clojure uses Software Transactional Memory. STM is a method of managing shared resources without using locking; every thread can modify a shared resource without regard for the action of other threads. When a thread accesses a resource, it records it's actions in a log; near the end of the transaction, is checks to see if another thread has modified the resouce. If the resource has been accessed, it restarts, and attempts to successfully modify the resource again.
+
+Clojure also uses immutable datatypes frequently; the value of an immutable datatype cannot be changed after it has been created. New copies of an object are created every time the object is modified, making it impossible for threads to modify objects as they are read. is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed above) that allow programmers not familiar with concurrency to use concurrency in their programs.
 \emcomment{Need to mention that in cases when mutation is required, Clojure provides several types of access that vary in degree of synchronization of access among multiple threads.}\hfcomment{I don't know about that side of Clojure - I'll leave it to you.}
 \emcomment{Will do}
 
 \subsection{Introduction to pmap}\label{sec:pmap}
-\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguments as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
+\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguements as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
 \begin{verbatim}
 (pmap add1 [1 2 3 4])
 => (2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it will only evaluate as needed, or if strictly forced to evaluate by \clocode{doall}. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. \emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
+Importantly, \clocode{pmap} is semi-lazy; it essentially tries to use as little parallel processing as possible, only returning results as needed. If strictly forced to evaluate by \clocode{doall}, pmap will be requested to return the entire expression immediately (i.e eager evaluation), and will then run fully in parallel.  \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
-(doall (pmap [1 2 3 4])) 
-=> (2 3 4 5)
+(time (pmap expensive-function [1 2 3 4]))
+=> 12000 ms 
+;because doall forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four).
+(time (doall (pmap [1 2 3 4])))
+=> 3000 ms
 \end{verbatim}
+
+ \emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
+
 
 \subsection{Introduction to reducers}\label{sec:reducers}
 Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. Reducers provides higher-order functions for the manipulation of collections, focusing on concurrent versions of the native high-order functions.  Built on Java's ForkJoin framework, Reducers uses the same data structures as the original functions, allowing drop-in replacement for many use cases.
