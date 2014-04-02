@@ -126,17 +126,11 @@ Morris, MN 56267\\
 
 
 \section*{\centering Abstract}
-In modern processing environments, parallelism is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. The most common approach to concurrency is the mutable state model, where threads can attempt to read or write the value of a shared resource. This approach, while it may be more efficient, can cause problems such as deadlocking - a state where two threads are both waiting for a resource that the other task holds. In immutable state systems, this is prevented by having the thread create an instance of the resource as soon as it is able to access the resource.
-
-
-Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, first released in late 2007. Clojure runs on the Java Virtual Machine (JVM), and features immutable data structures along with other tools to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 clojure.core.reducers was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. Clojure originally had an earlier version of this functionality in pmap, a parallel version of map, a built in function that traverses Clojure collections. Clojure includes many utilities that are implemented using significantly different methods. Reducers are based on the Java Fork/Join framework, while pmap uses the Java Futures library.
-
+In modern processing environments, parallelism is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively.
+Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, first released in late 2007. Clojure runs on the Java Virtual Machine (JVM), and features immutable data structures and software transactional memory to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 clojure.core.reducers was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. 
 
 In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time.
-
-
-We have found that both \clocode{pmap} and reducers decrease the execution time by a factor of the number of cores, as expected. Reducers were found to provide a significant performance gain, in all situations, over \clocode{pmap}. We also studied the distribution of load across multiple cores, and the scaling of the execution time as data size increases. We present the results, analysis, and conclusions.
-\emcomment{As submitted to MICS; needs to be changed}
+Reducers was found to provide a significant performance gain, in all situations, over \clocode{pmap}.  We present the results, analysis, and conclusions.
 \emcomment{Apparently abstract needs to be under 150 words}
 
 
@@ -156,9 +150,10 @@ We have found that both \clocode{pmap} and reducers decrease the execution time 
 \subsection{Clojure}\label{sec:clojure}
 Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine (JVM). Leveraging the widespread nature of the JVM, Clojure can run on any environment that supports the JVM. 
 
-The Lisp family of languages have several features in common, the most visible of which is the polish-prefix notation. Cojure, as a Lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, 
+The Lisp family of languages have several features in common, the most visible of which is the polish-prefix notation. Cojure, as a Lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, after interpretation, 
 \begin{verbatim}
 (+ 2 3)
+; '=>' signifies the result.
 => 5
 \end{verbatim}
 \emcomment{explain the notation (=> is the result - have you mentioned that it is interpreted?), also explain that + is a function}
@@ -169,12 +164,14 @@ Functions in Clojure are created using the \clocode{defn} macro, which has the b
 => 5
 \end{verbatim} 
 \emcomment{Walk the reader through the example: num is a parameter, (+ num 1) is a body, the next line is a function application.}
-We should talk about vectors \emcomment{too informal: change to something like "below we introduce vectors, an important Clojure data type for our discussion } - a type of collection in Clojure. As it turns out, some portions of reducers work best on vectors, and we use them frequently. \emcomment{Remove the previous sentence, it doesn't make sense to the audience at this point.}Vectors are a collection of items, indexed by continuous integers: accessing items by index has a $O(log_{32}n)$  complexity. They are denoted by \clocode{[brackets]}.
+Below we introduce vectors, an important Clojure data type for our discussion - a type of collection in Clojure. Vectors are a collection of items, indexed by continuous integers: accessing items by index has a $O(log_{32}n)$  complexity. They are denoted by 
+\clocode{[brackets]}.
 \begin{verbatim}
 (get [1 2 3 4 5] 2)
 => 3
 \end{verbatim}
 Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection. Note that collections in Clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
+\hfcomment{collections in clojure are basically magic.  I realized I have no idea what is going on.}
 \emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
 \begin{verbatim}
 (map add1 [0 1 2 3 4])
@@ -349,7 +346,21 @@ The full set of tests was run three times on each machine. The first run is disc
 \subsection{Results}\label{sec:results}
 In this section we show the results of running our tests across the machines mentioned above;
 
-<Table of average times>
+\hfcomment{I couldn't get this to work properly, even with & in place of the commas}
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Machine & reduce + map, reduce + pmap, r/fold + map, r/fold + pmap, r/fold, r/fold + r/map \\
+\hline
+Box 1 & 208.0, 66.4, 61.7, 207.0, 57.2, 54.6 \\
+Box 2 & 279.3, 250.6, 284.3, 280.8, 132.0, 131.0 \\
+Box 3 & 266.9, 225.1, 248.4, 275.5, 59.2, 63.6 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Sum-Primes Averages.}\label{table:sum-primes}
+\end{table}
  
 A typical mode was to find that the distributon was in two peaks - the serial methods and the parallel methods; 
 
