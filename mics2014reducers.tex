@@ -172,8 +172,6 @@ Below we introduce vectors, an important Clojure data type for our discussion --
 \end{verbatim}
 \emcomment{explain what get does. Remember, most of your target audience have never seen a Lisp-like language}
 Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection, returning the resulting collection. The type of the collection that gets returned is not a vector, but a more general collection type, so it is included in parentheses, and not brackets. However, for the most part this distinction is not important for our discussion. 
-%Note that collections in Clojure act as if they are weakly-typed, and will freely convert themselves to other collections - in this case a \clocode{seq}.
-%\hfcomment{collections in clojure are basically magic.  I realized I have no idea what is going on.}
 %\emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
 \begin{verbatim}
 (map add1 [0 1 2 3 4])
@@ -211,7 +209,7 @@ Clojure uses immutable datatypes by default; the value of an immutable datatype 
 => (2 3 4 5)
 \end{verbatim}
 Importantly, \clocode{pmap} is semi-lazy; it %essentially 
-tries to use as little parallel processing as possible, only returning results as needed \emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation) in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+tries to use as little processing as possible, only returning results as needed \emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation) in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
@@ -351,7 +349,6 @@ The full set of tests was run three times on each machine. The first run is disc
 \subsection{Results}\label{sec:results}
 In this section we show the results of running our tests across the machines mentioned above;
 
-\hfcomment{I couldn't get this to work properly, even with \& in place of the commas}
 \begin{table}
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|c|}
@@ -366,11 +363,41 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \end{center}
 \caption{Sum-Primes Averages.}\label{table:sum-primes}
 \end{table}
- 
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+Machine & reduce + map & reduce + pmap & r/fold + map & r/fold + pmap & r/fold\\
+\hline
+Box 1 & 2084.6 & 604.5 & 597.1 & 2065.7 & 535.8\\
+Box 2 & 2567.7 & 2585.6 & 2774.0 & 1269.3 & 1269 \\
+Box 3 & 2411.3 & 2426.6 & 2647.9 & 562.9 & 557.6\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Count-Primes Averages.}\label{table:sum-primes}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + r/map & r/fold\\
+\hline
+Box 1 & 115.4 & 128.7 & 109.7 & 28.6 & 30.5\\
+Box 2 & 120.1 & 401.3 & 414.0 & 60.0 & 58.0 \\
+Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Sum-Sqrt Averages.}\label{table:sum-primes}
+\end{table}
+
 A typical mode was to find that the distributon was in two peaks - the serial methods and the parallel methods; 
 
 \includegraphics[trim = 10mm 0mm 30mm 0mm, clip, width = 16cm,height = 10cm]{PSP-B1}
-\includegraphics[trim = 10mm 0mm 10mm 5mm, clip, width = 16cm,height = 12cm]{SSP-B1}
+\includegraphics[trim = 10mm 0mm 0mm 5mm, clip, width = 16cm,height = 11cm]{SSP-B1}
 
 
 
