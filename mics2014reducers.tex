@@ -413,7 +413,7 @@ The full set of tests was run three times on each machine. The first run is disc
 
 \section{Results and discussion}\label{sec:results-disc}
 \subsection{Results}\label{sec:results}
-In this section we show the results of running our tests across the machines mentioned above: in our tables, we sometimes use red instead of reduce to achieve proper formatting. We use \clocode{reduce + map} to provide a baseline which is just a serial run on one core; tests running at similar times are noted as running at {\it serial time}.
+In this section we show the results of running our tests across the machines mentioned above: in our tables, we sometimes abbreviate ``reduce'' to ''red''. We use \clocode{reduce + map} to provide a baseline which is just a serial run on one core; tests running at similar times are noted as running at {\it serial time}.
 
 \begin{table}[h!]
 \begin{center}
@@ -429,8 +429,7 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \end{center}
 \caption{Sum-Primes averages, (ms).}\label{table:sum-primes}
 \end{table}
-
- In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap} slightly slower than \clocode{r/fold} and \clocode{r/fold + r/map}. \clocode{r/fold} and \clocode{r/fold + r/map} run between 280\% and 110\% faster than serial time.
+For the Sum-Primes set of tests (see table~\ref{table:sum-primes}), in the first four tests, \clocode{reduce+map}, \clocode{reduce+pmap}, \clocode{r/fold+map}, \clocode{ r/fold+pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap} slightly slower than \clocode{r/fold} and \clocode{r/fold + r/map}. \clocode{r/fold} and \clocode{r/fold + r/map} run between 280\% and 110\% faster than serial time.
 
 \begin{table}[h!]
 \begin{center}
@@ -444,10 +443,10 @@ Box 3 & 2662.2 & 2411.3 & 2426.6 & 2647.9 & 557.6\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Count-Primes averages, (ms).}\label{table:sum-primes}
+\caption{Count-Primes averages, (ms).}\label{table:count-primes}
 \end{table}
 
- In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap}somewhat slower than \clocode{r/fold}. \clocode{r/fold} runs between 290\% and 100\% faster than serial time.
+For the Count-Primes set of tests (see table~\ref{table:count-primes}), in the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap}somewhat slower than \clocode{r/fold}. \clocode{r/fold} runs between 290\% and 100\% faster than serial time.
 
 
 \begin{table}[h!]
@@ -462,25 +461,25 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Sum-Sqrt averages, (ms).}\label{table:sum-primes}
+\caption{Sum-Sqrt averages, (ms).}\label{table:sum-sqrt}
 \end{table}
 
-The first three tests, execepting Box 2, run in serial time. Box 2 runs greater than serial time in \clocode{reduce + pmap} and \clocode{ r/fold + pmap} with \clocode{ reduce + map} running in serial time. \clocode{r/fold} and \clocode{r/fold + r/map} runs on all boxes between 270\% and 110\% faster than serial time
+For the Sum-Sqrt set of tests (see table~\ref{table:sum-sqrt}), The first three tests, execepting Box 2, run in serial time. Box 2 runs greater than serial time in \clocode{reduce + pmap} and \clocode{ r/fold + pmap} with \clocode{ reduce + map} running in serial time. \clocode{r/fold} and \clocode{r/fold + r/map} runs on all boxes between 270\% and 110\% faster than serial time
 
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 30mm 30mm, clip, width = 16cm,height = 10cm]{PSP-B1}
 \caption{Parallel combinations in Compare-Sum-Primes, Box 1, Run 2 (ms)}\label{figure:parallel}
 \end{figure}
- Figure~\ref{figure:parallel} shows the distribution of functions that run faster than serial time; because this is Box 1, \clocode{reduce + pmap} and \clocode{r/fold + pmap} are running properly, in parallel.
+ Figure~\ref{figure:parallel} shows the distribution of function run times for configurations that run faster than serial time; because this is Box 1, \clocode{reduce + pmap} and \clocode{r/fold + pmap} are running properly, in parallel. 
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 10mm 30mm, clip, width = 16cm,height = 9.75cm]{SSP-B1}
 \caption{Serial combinations in Compare-Sum-Primes, Box 1, Run 2 (ms)}\label{figure:serial}
 \end{figure}
-Figure~\ref{figure:serial} shows the distribution of functions that run in serial time. Only \clocode{reduce + map} and \clocode{r/fold + map} run in serial time.
+Figure~\ref{figure:serial} shows the distribution of function run times for the configurations that run in serial time. Only \clocode{reduce + map} and \clocode{r/fold + map} run in serial time.
 
-A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods. Figure~\ref{figure:parallel} is slightly atypical - \clocode{reduce} + \clocode{pmap} was functioning properly, and running in parallel time.
+A typical mode for a run of all 6 configurations was to find that the distribution was in two peaks: one for the functions running in the serial tiem and and the other one for those taking advantage of parallelization. Figure~\ref{figure:parallel} is slightly atypical since \clocode{reduce} + \clocode{pmap} was grouped with the functions runing in parallel time rather than serial time. 
 
-\subsection{Box discussion}\label{sec:boxdiscussion}
+\subsection{Machine differences}\label{sec:boxdiscussion}
 
 \hfcomment{move into discussion?}
 \subsubsection{Box 1}
