@@ -126,11 +126,10 @@ Morris, MN 56267\\
 
 
 \section*{\centering Abstract}
-In modern processing environments, concurrency - simulationous execution of computations - is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, first released in late 2007. Clojure runs on the Java Virtual Machine (JVM), and features immutable data structures and software transactional memory to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 \clocode{clojure.core.reducers} was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. 
+In modern processing environments, concurrency - simultaneous execution of computations - is an important tool software design. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, released in late 2007. Clojure features immutable data structures and software transactional memory to make concurrent development easier. In 2012 \clocode{clojure.core.reducers} was added to the language: a novel library that contains a set of high level functions for even more convenient and efficient parallel processing of data collections. 
 
-In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time.
-Reducers was found to provide a significant performance gain, in all situations, over \clocode{pmap}.  We present the results, analysis, and conclusions.
-\emcomment{Apparently abstract needs to be under 150 words}
+In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. We present the results, analysis, and conclusions.
+%\emcomment{Apparently abstract needs to be under 150 words}
 
 
  \newpage
