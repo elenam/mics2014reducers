@@ -174,13 +174,11 @@ Below we introduce vectors, an important Clojure data type for our discussion --
 => 4
 \end{verbatim}
 Here, \clocode{get} retrieves an element from a vector at index three (starting at zero), with the syntax \clocode{(get collection index)}.
-<<<<<<< HEAD
 \emcomment{The example above is still no explained}
 \emcomment{Remember, most of your target audience have never seen a Lisp-like language}
 =======
 %\emcomment{The example above is still no explained}
 %\emcomment{Remember, most of your target audience have never seen a Lisp-like language}
->>>>>>> 250d03ac9cb34795a81992ecae6b8fbfd8570f66
 Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection, returning the resulting collection. The type of the collection that gets returned is not a vector, but a more general collection type, so it is included in parentheses, and not brackets. However, for the most part this distinction is not important for our discussion. 
 %\emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
 \begin{verbatim}
@@ -204,7 +202,7 @@ In Clojure, the most common example of laziness, other than \clocode{if}, is seq
 (take 10 (range))
 => (0 1 2 3 4 5 6 7 8 9)
 \end{verbatim}
-Of course, these values only exist after they are requested by \clocode{take}, which is a function that takes the first $n$ elements of a collection. .
+Of course, these values only exist after they are requested by \clocode{take}, which is a function that takes the first $n$ elements of a collection. 
 %\emcomment{give an example}
 %\emcomment{Explain the concept of laziness since you use it later}
 
@@ -217,7 +215,7 @@ Programming concurrent programs is hard, especially when it comes to shared reso
 
 Clojure uses immutable datatypes by default; the value of an immutable datatype cannot be changed after it has been created. New copies of an object are created every time the object is modified, making it impossible for threads to modify objects as they are read, therefore making it impossible to accidentally leave an object in an inconsistent state. 
 However, variables that contain references to objects often need to be updated to point to the newest copy of the object. When a need for a direct manipulation arises, 
-Clojure provides several built-in models of accessing shared resources, depending on the synchronization requirements. For instance, if a resource needs to be updated eventually, but the order of updates by multiple threads and the exact timing of each update do not matter, one can use agents. Software Transactional Memory (STM) provides a more fine-grained control over synchronization of updates by bundling related updates to multiple resources into a transaction that operates in an all-or-nothing manner. When a thread accesses a resource, it records its actions in a log; near the end of the transaction, is checks to see if another thread has modified the resouce. If the resource has been accessed, it restarts, and attempts to successfully modify the resource again.
+Clojure provides several built-in models of accessing shared resources, depending on the synchronization requirements. For instance, if a resource needs to be updated eventually, but the order of updates by multiple threads and the exact timing of each update do not matter, one can use agents. Software Transactional Memory (STM) provides a more fine-grained control over synchronization of updates by bundling related updates to multiple resources into a transaction that operates in an all-or-nothing manner. When a thread accesses a resource, it records its actions in a log; near the end of the transaction, is checks to see if another thread has modified the resource. If the resource has been accessed, it restarts, and attempts to successfully modify the resource again.
 
 % is immutable and this allows concurrency to be added to programs that were not designed for concurrency without any major redesign. 
 Additionally, Clojure provides drop-in replacements for the built in higher order functions (discussed in Section~\ref{sec:clojure}) by their concurrent counterparts that allow programmers not familiar with concurrency to use concurrency in their programs.
@@ -235,14 +233,14 @@ Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing a
 If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e. eager evaluation), and always %\emcomment{are you sure that it's always in parallel?}
  in parallel~\cite{Pmap}. A function \clocode{doall} in Clojure forces eager evaluation on lazy expressions. 
 %In all of our tests, \clocode{doall} is used to ensure eager evaluation. % doesn't belong here
-If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+If we imagine a long running function, \clocode{expensive-function}, that runs for 3000ms, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
 (time (doall (pmap  expensive-function  [1 2 3 4])))
 => 3000 ms
 \end{verbatim}
-When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four).
+When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four). Of course, this is an idealized example; non-parallel operations and overhead make practical examples messier.
  %\emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
 
 
@@ -367,11 +365,11 @@ This test used a collection of 100,000 random integers uniformly distributed bet
  
 \begin{itemize}
  \item 
- Box 1 has an Intel i7 (4700MQ) cpu, with 4 hyper-threaded cores, running Windows 7.
+ Box 1 has an Intel i7 (4700MQ) CPU, with 4 hyper-threaded cores, running Windows 7.
  \item
- Box 2 has an Intel i5 (650) cpu, with 4 cores, running Fedora 18.
+ Box 2 has an Intel i5 (650) CPU, with 4 cores, running Fedora 18.
  \item
- Box 3 has an AMD FX-8350 cpu, with 8 cores, running Fedora 18. 
+ Box 3 has an AMD FX-8350 CPU, with 8 cores, running Fedora 18. 
  \end{itemize}
   
 The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant, despite warmup.
