@@ -405,10 +405,10 @@ This test used a collection of 100,000 random integers uniformly distributed bet
   
 The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is interesting to note that the ratio between each configuration in a test remained constant, despite warm-up.
 
-\emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
+%\emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
 \subsection{Results}\label{sec:results}
-In this section we show the results of running our tests across the machines mentioned above;
+In this section we show the results of running our tests across the machines mentioned above:
 
 \begin{table}[h!]
 \begin{center}
@@ -469,9 +469,9 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods. Figure~\ref{figure:parallel} is slightly atypical - \clocode{reduce} + \clocode{pmap} was functioning properly, and running in parallel time.
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components~\cite{McIntyre:2012},  was a factor. Combining reducers functions, such as \clocode{r/fold} + \clocode{r/map} runs within a standard error of the one-step \clocode{r/fold} method. It seems likely that they have the same, or approximately the same runtime.
+We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD fx-8350 machine tested did not show this same pattern. We suspect that the somewhat novel Bulldozer architecture, where each pair of cores is packaged into modules that share components~\cite{McIntyre:2012},  was a factor. Combining reducers functions, such as \clocode{r/fold} + \clocode{r/map} runs within a standard error of the one-step \clocode{r/fold} method. It seems likely that they have the same, or approximately the same runtime.
 
-\clocode{pmap}, when properly executing in parallel was somewhat slower than reducers, but was often executing in serial time. In several instances \clocode{pmap} was up to 244\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. When \clocode{pmap} was working, \clocode{reduce} + \clocode{pmap} ran faster than serial time, but was still slower than reducers by 15\%. The simplest description of \clocode{pmap} is inconsistency - there is no obvious way to predict whether \clocode{pmap} will run properly on a given machine.
+Interestingly, \clocode{pmap}, when properly executing in parallel was somewhat slower than reducers, but was often executing in serial time. In several instances \clocode{pmap} was up to 244\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. When \clocode{pmap} was working, \clocode{reduce} + \clocode{pmap} ran faster than serial time, but was still slower than reducers by 15\%. The simplest description of \clocode{pmap} is inconsistency - there is no obvious way to predict whether \clocode{pmap} will run properly on a given machine.
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
