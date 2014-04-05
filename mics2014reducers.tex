@@ -396,7 +396,7 @@ This test used a collection of 100,000 random integers uniformly distributed bet
  Box 3 has an AMD FX-8350 CPU, with 8 cores, running Fedora 18. 
  \end{itemize}
   
-The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant, despite warmup.
+The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is interesting to note that the ratio between each configuration in a test remained constant, despite warmup.
 
 \emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
@@ -449,7 +449,7 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \end{table}
 
 A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods; 
-\begin{figure}[h]
+\begin{figure}[h!]
 \includegraphics[trim = 10mm 0mm 30mm 0mm, clip, width = 16cm,height = 10cm]{PSP-B1}
 \end{figure}
 \begin{figure}[h!]
@@ -458,7 +458,9 @@ A typical mode was to find that the distribution was in two peaks - the serial m
 
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components~\cite{McIntyre:2012},  was a factor. \clocode{pmap}, when properly executing in parallel was somewhat slower, but was often executing in serial time. In several instances \clocode{pmap} was up to 244\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
+We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components~\cite{McIntyre:2012},  was a factor. 
+Combining reducers functions, such as \clocode{r/fold} + \clocode{r/map} runs within a standard error of the one-step \clocode{r/fold} method. It seems likely that they have the same, or approximately the same runtime, given the same data.
+\clocode{pmap}, when properly executing in parallel was somewhat slower than reducers, but was often executing in serial time. In several instances \clocode{pmap} was up to 244\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
@@ -467,7 +469,7 @@ We have found that the reducers library, in all tested cases, reduces the execut
 
 \subsection{Future Work}\label{sec:future}
 During our study, we found a number of issues we were unable to address - the most visible of which is the poor performance of \clocode{pmap} - finding that a parallel function is slower than a serial function is unexpected, to say the least. While we do have a hypothesis as to why we see this behavior, we do not have enough information to conclude our hypothesis is correct. Reducers gives us another round of questions; how does reducers decide how many threads it creates? Is there an optimal number of threads? What effect does CPU architecture have on Clojure's concurrency?	
-These questions have major implications toward the usage of Clojure reducers and \clocode{pmap}, and ...
+These questions have major implications toward the usage of Clojure reducers and \clocode{pmap} in production enviroments; \clocode{pmap} has significant qualifiers that need to be addressed.
 
 
 
