@@ -143,7 +143,7 @@ In this study, we focus on testing the various methods of parallel processing in
 
 \section{Introduction}\label{sec:intro}
 
-	 Clojure is a dialect of Lisp, developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}, with a focus on concurrency and portability. By compiling into Java Bytecode, Clojure offers programmers ultra-portable code that leverages the widespread nature of the Java virtual machine. Recently, Rich Hickey released a new library, reducers, for the Clojure programming language that introduces major changes to the concurrency tools offered in Clojure's core library. A subject of research we were interested in pursuing was the development of concurrent algorithms; we thought that pursuing run-time comparison of parallel methods would be a good way of furthering that topic. Eventually, we would like to find or make a way of developing parallel algorithms that are accessible to those without a significant OS background. To that end, we sought to compare some of the built in methods for adding concurrency to Clojure code. We provide a introduction~/ref{background} to Clojure, reducers, and another concurrency tool, pmap. Our methodology is presented in section~\ref{methodology}, leading to our results, discussion, and future work in section~\ref{sec:results-disc}.
+	 Clojure is a dialect of Lisp, developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}, with a focus on concurrency and portability. By compiling into Java Bytecode, Clojure offers programmers ultra-portable code that leverages the widespread nature of the Java virtual machine. Recently, Rich Hickey released a new library, reducers, for the Clojure programming language that introduces major changes to the concurrency tools offered in Clojure's core library. A subject of research we were interested in pursuing was the development of concurrent algorithms; we thought that pursuing run-time comparison of parallel methods would be a good way of furthering that topic. Eventually, we would like to find or make a way of developing parallel algorithms that are accessible to those without a significant OS background. To that end, we sought to compare some of the built in methods for adding concurrency to Clojure code. We provide a introduction in section ~\ref{sec:background} to Clojure, reducers, and another concurrency tool, pmap. Our methodology is presented in section ~\ref{sec:methodology}, leading to our results, discussion, and future work in section ~\ref{sec:results-disc}.
 
 \emcomment{obviously, more is needed}
 
@@ -349,7 +349,7 @@ As described previously, we tested the pure r/fold implementation against config
 Here the work of determining the primality of the numbers is moved into a mapping operation, which returns 1 for each element if prime, or 0 if not. Then we use r/fold to sum the result in parallel. This is simpler from an implementation standpoint, as our mapping function does not have to conform to the restrictions of r/fold, and summation is trivial to use with r/fold. Note that this functionality could have also been implemented using \clocode{filter}, but we chose to test it with map-like functions only, for uniformity with other tests. 
 %\joecomment{Is this redundant now with the section describing our test structure?}
 
-The data used for this test is a collection of 100,000 random integers uniformly distributed between 0 and 1 billion. This test was run 100 times, with 100 different data sets. 
+The data used for this test is a collection of 100,000 random integers uniformly distributed between 0 and 1 billion. This test was run 100 times, with new data each time. 
 \emcomment{with 100 different data sets? Or repeated, for averages? Or what?}
 %\joecomment{Does this belong in a table? If so, someone else want to do it? :) Never done a LaTeX table and not too excited to learn...}
 %\emcomment{Yes -- No (I don't want to) -- will do.}
@@ -429,7 +429,7 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \end{center}
 \caption{Sum-Primes averages (ms).}\label{table:sum-primes}
 \end{table}
-For the Sum-Primes set of tests (see table~\ref{table:sum-primes}), in the first four tests, \clocode{reduce+map}, \clocode{reduce+pmap}, \clocode{r/fold+map}, \clocode{ r/fold+pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap} slightly slower than \clocode{r/fold} and \clocode{r/fold + r/map}. \clocode{r/fold} and \clocode{r/fold + r/map} run between 280\% and 110\% faster than serial time.
+For the Sum-Primes set of tests (see table~\ref{table:sum-primes}), in the first four tests, \clocode{reduce+map}, \clocode{reduce+pmap}, \clocode{r/fold+map}, \clocode{ r/fold+pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap} running slightly slower than \clocode{r/fold} and \clocode{r/fold + r/map}. \clocode{r/fold} and \clocode{r/fold + r/map} run between 280\% and 110\% faster than serial time.
 
 \begin{table}[h!]
 \begin{center}
@@ -464,7 +464,7 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \caption{Sum-Sqrt averages (ms).}\label{table:sum-sqrt}
 \end{table}
 
-For the Sum-Sqrt set of tests (see table~\ref{table:sum-sqrt}), The first three tests, execepting Box 2, run in serial time. Box 2 runs greater than serial time in \clocode{reduce + pmap} and \clocode{ r/fold + pmap} with \clocode{ reduce + map} running in serial time. \clocode{r/fold} and \clocode{r/fold + r/map} runs on all boxes between 270\% and 110\% faster than serial time
+For the Sum-Sqrt set of tests (see table~\ref{table:sum-sqrt}), The first three tests, execepting Box 2, run in serial time. Box 2 runs much longer than serial time in \clocode{reduce + pmap} and \clocode{ r/fold + pmap} with \clocode{ reduce + map} running in serial time. \clocode{r/fold} and \clocode{r/fold + r/map} runs on all boxes between 270\% and 110\% faster than serial time
 
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 30mm 30mm, clip, width = 16cm,height = 10cm]{PSP-B1}
@@ -510,8 +510,7 @@ Another curious observation about  \clocode{pmap} is that it can produce running
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
-
-
+We conclude that the Reducers library is a complete improvement over \clocode{pmap}, providing a faster, more stable, and predictable platform for concurrency. \clocode{pmap} is highly dependent on environmental conditions and is difficult to produce working code with. Both reducers and \clocode{pmap} show machine-specific behaviors, likely due to the differing micro-architectures of the respective CPUs. \clocode{r/fold} works the same as \clocode{r/fold + r/map}, confirming that using r/map and other functions in proper programming style does not lead to slower behavior.
 
 \subsection{Future Work}\label{sec:future}
 During our study, we found a number of issues we were unable to address - the most visible of which is the poor performance of \clocode{pmap} - finding that a parallel function is slower than a serial function is unexpected, to say the least. While we do have a hypothesis as to why we see this behavior, we do not have enough information to conclude our hypothesis is correct. Reducers gives us another round of questions; how does reducers decide how many threads it creates? Is there an optimal number of threads? What effect does CPU architecture have on Clojure's concurrency?	
