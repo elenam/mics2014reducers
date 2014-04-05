@@ -183,7 +183,7 @@ Lisps have a philosophy of treating code as data, meaning that all functions can
 =>(1 2 3 4 5)
 \end{verbatim}
 
-Clojure pre-defined functions include \clocode{reduce}, also known as fold in other Lisps, which recursively applies the function to two arguments: an element of a collection and the result of applying a reduce to the rest of the collection. This process is repeated until the end of the collection is reached. 
+Pre-defined functions in Clojure include \clocode{reduce}, also known as fold in other Lisps, which recursively applies the function to two arguments: an element of a collection and the result of applying a reduce to the rest of the collection. This process is repeated until the end of the collection is reached. 
 \begin{verbatim}
 (reduce + [1 2 3])
 => 6
@@ -411,13 +411,14 @@ The full set of tests was run three times on each machine. The first run is disc
 %\emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
 \subsection{Results}\label{sec:results}
-In this section we show the results of running our tests across the machines mentioned above:
+In this section we show the results of running our tests across the machines mentioned above: in our tables, we often use red instead of reduce to achieve proper formatting.
+
 
 \begin{table}[h!]
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|c|}
 \hline
-Machine & reduce + map & reduce + pmap & r/fold + map & r/fold + pmap & r/fold & r/fold + r/map \\
+Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + map & r/fold & r/fold + r/map \\
 \hline
 Box 1 & 208.0 & 66.4 & 61.7 & 207.0 & 57.2 &  54.6 \\
 Box 2 & 279.3 & 250.6 & 284.3 & 280.8 & 132.0 & 131.0 \\
@@ -425,7 +426,9 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Sum-Primes Averages.}\label{table:sum-primes}
+\caption{Sum-Primes averages, (ms).}\label{table:sum-primes}
+ In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all run in serial time, except for Box 1, where \clocode{reduce + pmap} and \clocode{r/fold + pmap}
+
 \end{table}
 
 \begin{table}[h!]
@@ -440,7 +443,7 @@ Box 3 & 2411.3 & 2426.6 & 2647.9 & 562.9 & 557.6\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Count-Primes Averages.}\label{table:sum-primes}
+\caption{Count-Primes averages, (ms).}\label{table:sum-primes}
 \end{table}
 
 \begin{table}[h!]
@@ -455,18 +458,18 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Sum-Sqrt Averages.}\label{table:sum-primes}
+\caption{Sum-Sqrt averages, (ms).}\label{table:sum-primes}
 \end{table}
 
 
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 30mm 30mm, clip, width = 16cm,height = 10cm]{PSP-B1}
-\caption{Parallel combinations in Compare-Sum-Primes, Box 1, Run 2}\label{figure:parallel}
+\caption{Parallel combinations in Compare-Sum-Primes, Box 1, Run 2 (ms)}\label{figure:parallel}
 \end{figure}
 
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 10mm 30mm, clip, width = 16cm,height = 9.75cm]{SSP-B1}
-\caption{Serial combinations in Compare-Sum-Primes, Box 1, Run 2}\label{figure:serial}
+\caption{Serial combinations in Compare-Sum-Primes, Box 1, Run 2 (ms)}\label{figure:serial}
 \end{figure}
 
 A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods. Figure~\ref{figure:parallel} is slightly atypical - \clocode{reduce} + \clocode{pmap} was functioning properly, and running in parallel time.
