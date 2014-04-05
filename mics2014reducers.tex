@@ -174,7 +174,7 @@ Below we introduce vectors, an important Clojure data type for our discussion --
 => 5
 \end{verbatim}
 \emcomment{The example above is still no explained}
-\emcomment{explain what get does. Remember, most of your target audience have never seen a Lisp-like language}
+\emcomment{Remember, most of your target audience have never seen a Lisp-like language}
 Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection, returning the resulting collection. The type of the collection that gets returned is not a vector, but a more general collection type, so it is included in parentheses, and not brackets. However, for the most part this distinction is not important for our discussion. 
 %\emcomment{A seq is not, strictly speaking, a concrete type. I also think this sentence is confusing to readers. Perhaps saying that what gets returned is not a vector, but a more general type of a collection, known as a sequence?}
 \begin{verbatim}
@@ -192,8 +192,8 @@ The next of the major high-order functions is \clocode{filter}, which takes a pr
 (filter even? [1 2 3 4 5])
 => (2 4)
 \end{verbatim}
-Another common feature in clojure is laziness. Laziness is the concept of delaying evaluation of an expression untill the value it returns is needed.
-\emcomment{Explain the concept of laziness since you use it later}
+Another common feature in Clojure is laziness. Laziness is the concept of delaying evaluation of an expression untill the value it returns is needed.\emcomment{give an example}
+%\emcomment{Explain the concept of laziness since you use it later}
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
  Lately, processor clock speed has plateaued: simply running the CPU faster is becoming increasingly more difficult from the engineering standpoint. 
