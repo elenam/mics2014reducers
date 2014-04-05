@@ -126,8 +126,7 @@ Morris, MN 56267\\
 
 
 \section*{\centering Abstract}
-In modern processing environments, parallelism is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively.
-Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, first released in late 2007. Clojure runs on the Java Virtual Machine (JVM), and features immutable data structures and software transactional memory to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 clojure.core.reducers was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. 
+In modern processing environments, concurrency - simulationous execution of computations - is becoming an increasingly important tool in making gains in software performance. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, first released in late 2007. Clojure runs on the Java Virtual Machine (JVM), and features immutable data structures and software transactional memory to make concurrent development easier. Immutable data structures do not present problems stemming from sharing the same memory. Clojure has proven to provide high efficiency of parallel processing. In 2012 \clocode{clojure.core.reducers} was added to the language: a novel library that contains a set of high level functions for an even more convenient and efficient parallel processing of data collections. 
 
 In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. In order to time the execution we used a Clojure utility that allows access to the system clock. We created a function that records the system time, executes a given function, and then returns the elapsed time.
 Reducers was found to provide a significant performance gain, in all situations, over \clocode{pmap}.  We present the results, analysis, and conclusions.
@@ -142,11 +141,11 @@ Reducers was found to provide a significant performance gain, in all situations,
 
 \section{Introduction}\label{sec:intro}
 
+	Recently, Rich Hickey released a new library for the Clojure programming language that introduces major changes to the concurrency tools offered in Clojure's core library. Clojure is a dialect of Lisp, developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}, with a focus on concurrency and portability. By compiling into Java Bytecode, Clojure offers programmers ultra-portible code that leverages the widespread nature of the Java virtual machine. 
+
 \section{Background}\label{sec:background}
 
 \subsection{Clojure}\label{sec:clojure}
-Clojure was developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}. Clojure is a dialect of Lisp designed for concurrency and portability that runs on the Java virtual machine (JVM). Leveraging the widespread nature of the JVM, Clojure can run on any environment that supports the JVM. 
-
 The Lisp family of languages has several features in common, the most visible of which is the polish-prefix notation. Cojure, as a Lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, after interpretation, 
 \begin{verbatim}
 (+ 2 3)
@@ -178,7 +177,7 @@ Lisps have a philosophy of treating code as data, meaning that all functions can
 =>(1 2 3 4 5)
 \end{verbatim}
 
-Clojure pre-defined functions include \clocode{reduce}, also known as fold in other Lisps, which applies the given function to the first two items in a collection. \emcomment{I don't think this is how it works: it applies the function to an element and the result of the application to the rest of the collection. I also think that saying that it uses a function to compute a single value from all elements of the collection is sufficient.} It then takes the result and applies the function to the result and the next item in the collection, repeating this process until the collection is empty.
+Clojure pre-defined functions include \clocode{reduce}, also known as fold in other Lisps, which recursively applies the function to the first element of a collection and the result of applying a reduce to the rest of the collection, repeating this process until the collection is empty.
 \begin{verbatim}
 (reduce + [1 2 3])
 => 6
@@ -188,6 +187,7 @@ The next of the major high-order functions is \clocode{filter}, which takes a pr
 (filter even? [1 2 3 4 5])
 => (2 4)
 \end{verbatim}
+Another common feature in clojure is laziness. Laziness is the concept of delaying evaluation of an expression untill the value it returns is needed.
 \emcomment{Explain the concept of laziness since you use it later}
 
 \subsection{Introduction to concurrency}\label{sec:concurrency}
@@ -209,8 +209,7 @@ Clojure uses immutable datatypes by default; the value of an immutable datatype 
 (pmap add1 [1 2 3 4])
 => (2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it %essentially 
-tries to use as little processing as possible, only returning results as needed \emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation) in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing as possible, only returning results as needed ; that is, it can occassionally appear to evaluate as a serial function.\emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation), and always in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
@@ -340,7 +339,7 @@ This test used a collection of 100,000 random integers uniformly distributed bet
  \item
  Box 2 has an Intel i5 (650) cpu, with 4 cores, running Fedora 18.
  \item
- Box 3 has an AMD FX-8350, with 8 cores, running Fedora 18. 
+ Box 3 has an AMD FX-8350 cpu, with 8 cores, running Fedora 18. 
  \end{itemize}
   
 The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
