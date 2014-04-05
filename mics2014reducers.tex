@@ -291,7 +291,7 @@ r/fold & parallel reduce\\
 \caption{Configurations for our tests}\label{table:tests}
 \end{table}
 
-The test configurations are summarized in table~\ref{table:tests}. Here \clocode{map} and \clocode{reduce} are the standard serial functions, \clocode{pmap} is a parallel map as described in Section~\ref{sec:pmap}, and \clocode{r/fold} and \clocode{r/map} are reducers functions, as described in Section~\ref{sec:reducers}. We used the default settings for all of these functions. Note that because the r/fold configuration does not have a mapping phase, the test code for it needed to be rewritten slightly to move the functionality that was done by map in the other tests into the reducing stage. Section~\ref{sec:fermat} provides details of our testing code. 
+The test configurations are summarized in table~\ref{table:tests}. Here \clocode{map} and \clocode{reduce} are the standard serial functions, \clocode{pmap} is a parallel map as described in Section~\ref{sec:pmap}, and \clocode{r/fold} and \clocode{r/map} are reducers functions, as described in Section~\ref{sec:reducers}. We used the default settings for all of these functions. Note that because the r/fold configuration does not have a mapping phase, the test code for it needed to be rewritten slightly to move the functionality that was done by map in the other tests into the reducing stage. Section~\ref{sec:fermat} provides details of our testing code. Also important is to note that our tests were run with new data each time.
 
 
 %\emcomment{and here we talk about specific functions}
@@ -349,7 +349,7 @@ As described previously, we tested the pure r/fold implementation against config
 Here the work of determining the primality of the numbers is moved into a mapping operation, which returns 1 for each element if prime, or 0 if not. Then we use r/fold to sum the result in parallel. This is simpler from an implementation standpoint, as our mapping function does not have to conform to the restrictions of r/fold, and summation is trivial to use with r/fold. Note that this functionality could have also been implemented using \clocode{filter}, but we chose to test it with map-like functions only, for uniformity with other tests. 
 %\joecomment{Is this redundant now with the section describing our test structure?}
 
-The data used for this test is a collection of 100,000 random integers uniformly distributed between 0 and 1 billion. This test was run 100 times. 
+The data used for this test is a collection of 100,000 random integers uniformly distributed between 0 and 1 billion. This test was run 100. 
 \emcomment{with 100 different data sets? Or repeated, for averages? Or what?}
 %\joecomment{Does this belong in a table? If so, someone else want to do it? :) Never done a LaTeX table and not too excited to learn...}
 %\emcomment{Yes -- No (I don't want to) -- will do.}
@@ -412,14 +412,13 @@ The full set of tests was run three times on each machine. The first run is disc
 %\emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
 \section{Results}\label{sec:results}
-In this section we show the results of running our tests across the machines mentioned above: in our tables, we often use red instead of reduce to achieve proper formatting.
-
+In this section we show the results of running our tests across the machines mentioned above: in our tables, we sometimes use red instead of reduce to achieve proper formatting. For brevity, we use /clocode{reduce + map} to provide a baseline; tests running at similar times are noted as running at 'serial time'.
 
 \begin{table}[h!]
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|c|}
 \hline
-Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + map & r/fold & r/fold + r/map \\
+Machine & red + map & red + pmap & r/fold + pmap & r/fold + map & r/fold & r/fold + r/map \\
 \hline
 Box 1 & 208.0 & 66.4 & 61.7 & 207.0 & 57.2 &  54.6 \\
 Box 2 & 279.3 & 250.6 & 284.3 & 280.8 & 132.0 & 131.0 \\
@@ -430,7 +429,7 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \caption{Sum-Primes averages, (ms).}\label{table:sum-primes}
 \end{table}
 
- In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box has \clocode{reduce + pmap} and \clocode{r/fold + pmap} running in parallel time. \clocode{r/fold} and \clocode{r/fold + r/map} run on all boxes in parallel time.
+ In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap} running in parallel time. \clocode{r/fold} and \clocode{r/fold + r/map} run on all boxes in parallel time.
 
 \begin{table}[h!]
 \begin{center}
@@ -447,7 +446,7 @@ Box 3 & 2411.3 & 2426.6 & 2647.9 & 562.9 & 557.6\\
 \caption{Count-Primes averages, (ms).}\label{table:sum-primes}
 \end{table}
 
- In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box has \clocode{reduce + pmap} and \clocode{r/fold + pmap} running in parallel time. \clocode{r/fold} runs on all boxes in parallel time.
+ In the first four tests, \clocode{reduce + map, reduce + pmap, r/fold + map, r/fold + pmap}, almost all the combinations run in serial time, except for Box 1. Box 1 has \clocode{reduce + pmap} and \clocode{r/fold + pmap} running in parallel time. \clocode{r/fold} runs on all boxes in parallel time.
 
 
 \begin{table}[h!]
@@ -472,11 +471,12 @@ The first three tests, execepting Box 2, run in serial time. Box 2 runs greater 
 \includegraphics[trim = 10mm 10mm 30mm 30mm, clip, width = 16cm,height = 10cm]{PSP-B1}
 \caption{Parallel combinations in Compare-Sum-Primes, Box 1, Run 2 (ms)}\label{figure:parallel}
 \end{figure}
-
+ Figure~\ref{figure:parallel} shows the distribution of functions that run in parallel time; because this is Box 1, \clocode{reduce + pmap} and \clocode{r/fold + pmap} run in parallel time.
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 10mm 30mm, clip, width = 16cm,height = 9.75cm]{SSP-B1}
 \caption{Serial combinations in Compare-Sum-Primes, Box 1, Run 2 (ms)}\label{figure:serial}
 \end{figure}
+Figure~\ref{figure:serial} shows the distribution of functions that run in serial time. Only \clocode{reduce + map} and \clocode{r/fold + map} run in serial time.
 
 A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods. Figure~\ref{figure:parallel} is slightly atypical - \clocode{reduce} + \clocode{pmap} was functioning properly, and running in parallel time.
 
