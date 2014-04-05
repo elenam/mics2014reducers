@@ -126,7 +126,11 @@ Morris, MN 56267\\
 
 
 \section*{\centering Abstract}
-In modern processing environments, concurrency - simultaneous execution of computations - is an important tool software design. Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. Clojure is a Lisp dialect designed for concurrency and portability by Rich Hickey, released in late 2007. Clojure features immutable data structures and software transactional memory to make concurrent development easier. In 2012 \clocode{clojure.core.reducers} was added to the language: a novel library that contains a set of high level functions for even more convenient and efficient parallel processing of data collections. 
+In modern processing environments, concurrency - simultaneous execution of computations - is an important tool. %software design. 
+Despite the importance of parallelism, it is often poorly supported, or awkward to use effectively. Clojure is a Lisp dialect designed for concurrency and portability, 
+%by Rich Hickey, 
+released in late 2007. Clojure features immutable data structures and built-in support for concurrency. %and software transactional memory to make concurrent development easier. 
+In 2012 \clocode{clojure.core.reducers} was added to the language: a novel library that provides a set of high-level functions for even more convenient and efficient parallel processing of data collections. 
 
 In this study, we focus on testing the various methods of parallel processing in Clojure and explore the functionality of the reducers library. Timing the execution of computationally expensive and highly parallelizable data processing allows us to directly observe the differences between different methods of parallelism provided in Clojure. We present the results, analysis, and conclusions.
 %\emcomment{Apparently abstract needs to be under 150 words}
@@ -239,8 +243,11 @@ Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. 
 \section{Efficiency of parallel methods in Clojure}\label{sec:efficiency} 
 
 \subsection{Test structure}\label{sec:testStruct}
-To determine the performance implications of the new reducers library, we have split each of our tests into two sections. First, we run the test using Clojure's multi-threaded reduce, r/fold, which computes the entire result in one operation. Then, we run the test using a two-step process: first, a map operation which prepares values for reduction, followed by a reduce operation which combines the values computed in the first step. This two-step method allows us to shift where and how the most processing power is used, and to determine what combination of elements is most efficient.
-\emcomment{While this does indeed describe our tests, I wonder if we can make it clearer by using an itemized list or a table or some such: it's *very* difficult to get this information from reading this paragraph. We also do r/fold + r/map, I am not sure it is included here.}\joecomment{Might make sense to have a table of all operations - name, "type" (map vs reduce) and whether it is single- or multi-threaded?}
+To determine the performance implications of the new reducers library, we have ran each test data in two different types of configurations, differing in which elements are executed concurrently, and which ones sequentially. 
+\emcomment{before we dive into this, introduce what our data sets are (ballpark of the number of elements, etc)}
+% split each of our tests into two sections. 
+First, we run the test using Clojure's multi-threaded reduce, r/fold, which computes the entire result in one operation. Then, we run the test using a two-step process: first, a map operation which prepares values for reduction, followed by a reduce operation which combines the values computed in the first step. This two-step method allows us to shift where and how the most processing power is used, and to determine what combination of elements is most efficient.
+%\emcomment{While this does indeed describe our tests, I wonder if we can make it clearer by using an itemized list or a table or some such: it's *very* difficult to get this information from %reading this paragraph. We also do r/fold + r/map, I am not sure it is included here.}\joecomment{Might make sense to have a table of all operations - name, "type" (map vs reduce) and %whether it is single- or multi-threaded?}
 The tests are summarized in table~\ref{table:tests}.
 
 \begin{table}
