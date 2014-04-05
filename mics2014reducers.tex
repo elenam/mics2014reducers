@@ -195,7 +195,7 @@ The next of the major high-order functions is \clocode{filter}, which takes a pr
 => (2 4)
 \end{verbatim}
 Another common feature in Clojure is {\it  laziness}. Laziness is the concept of delaying evaluation of an expression until the value it returns is needed. For example, \clocode{if} statements in many languages are lazy. In pseudocode, \clocode{if a then b else c} is an example of lazy evaluation. Normally, \clocode{b} and \clocode{c} are only evaluated depending on the value of \clocode{a}, and the \clocode{if} wouldn't work if both \clocode{b} and \clocode{c} were evaluated. 
-In Clojure, the most common example of laziness, other than \clocode{if}, is sequences. For example, if you have a sequence that has a hundred expressions but only retrieve the first 50, only the first 50 are evaluated. More interestingly, you can have infinite sequences: the function \clocode{range}, called with no arguments, returns the infinite sequence of non-negative integers, strating at 0:
+In Clojure, the most common example of laziness, other than \clocode{if}, is sequences. For example, if you have a sequence that has a hundred expressions but only retrieve the first 50, only the first 50 are evaluated. More interestingly, you can have infinite sequences: the function \clocode{range}, called with no arguments, returns the infinite sequence of non-negative integers, starting at 0:
 \begin{verbatim}
 (take 10 (range))
 => (0 1 2 3 4 5 6 7 8 9)
@@ -465,7 +465,7 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \caption{Sum-Sqrt averages (ms).}\label{table:sum-sqrt}
 \end{table}
 
-For the Sum-Sqrt set of tests (see table~\ref{table:sum-sqrt}), The first three tests, execepting Box 2, run in serial time. Box 2 runs much longer than serial time in \clocode{reduce + pmap} and \clocode{ r/fold + pmap} with \clocode{ reduce + map} running in serial time. \clocode{r/fold} and \clocode{r/fold + r/map} runs on all boxes between 270\% and 110\% faster than serial time
+For the Sum-Sqrt set of tests (see table~\ref{table:sum-sqrt}), The first three tests, excepting Box 2, run in serial time. Box 2 runs much longer than serial time in \clocode{reduce + pmap} and \clocode{ r/fold + pmap} with \clocode{ reduce + map} running in serial time. \clocode{r/fold} and \clocode{r/fold + r/map} runs on all boxes between 270\% and 110\% faster than serial time
 
 \begin{figure}[h!]
 \includegraphics[trim = 10mm 10mm 30mm 30mm, clip, width = 16cm,height = 10cm]{PSP-B1}
@@ -478,14 +478,14 @@ For the Sum-Sqrt set of tests (see table~\ref{table:sum-sqrt}), The first three 
 \end{figure}
 Figure~\ref{figure:serial} shows the distribution of function run times for the configurations that run in serial time. Only \clocode{reduce + map} and \clocode{r/fold + map} run in serial time.
 
-A typical mode for a run of all 6 configurations was to find that the distribution was in two peaks: one for the functions running in the serial tiem and and the other one for those taking advantage of parallelization. Figure~\ref{figure:parallel} is slightly atypical since \clocode{reduce} + \clocode{pmap} was grouped with the functions runing in parallel time rather than serial time. 
+A typical mode for a run of all 6 configurations was to find that the distribution was in two peaks: one for the functions running in the serial time and and the other one for those taking advantage of parallelization. Figure~\ref{figure:parallel} is slightly atypical since \clocode{reduce} + \clocode{pmap} was grouped with the functions running in parallel time rather than serial time. 
 
 \subsection{Possible influence of machine differences }\label{sec:boxdiscussion}
 
 %\hfcomment{move into discussion?}
 \subsubsection{Box 1}
 
-Box 1, with an Intel I7-4700Mq CPU, was the fastest machine tested by a fair margin. It was also the only box where \clocode{pmap} ran faster than \clocode{reduce + map}. We suspect that \clocode{pmap} is causing thread thrashing, and given that this machine is the only one with hyper-threading, it seems likely that hyperthreading has some effect on the CPU's ability to manage large amounts of threads without thrashing. Reducers ran close to the expected maximum speedup given the number of cores - 300\%.
+Box 1, with an Intel I7-4700MQ CPU, was the fastest machine tested by a fair margin. It was also the only box where \clocode{pmap} ran faster than \clocode{reduce + map}. We suspect that \clocode{pmap} is causing thread thrashing, and given that this machine is the only one with hyper-threading, it seems likely that hyperthreading has some effect on the CPU's ability to manage large amounts of threads without thrashing. Reducers ran close to the expected maximum speedup given the number of cores - 300\%.
 
 \subsubsection{Box 2}
 
@@ -493,7 +493,7 @@ Box 2, with an Intel I5-650 CPU, was the slowest machine tested. Notably, \cloco
 
 \subsubsection{Box 3}
 
-Box 3 was our only AMD machine, running a fx-8350 CPU. This machine, while also without hyperthreading, still handled \clocode{pmap} better than Box 2. It did not, however, reach the expected speedup - as an 8 core CPU, using reducers should show a 700\% improvement, but it actually ran near a 300\% improvement. The fx-8350 CPU is technically an 8 core CPU; it's architecture, where each pair of cores is packaged into a module that shares some components between cores~\cite{McIntyre:2012}, may have something to do with this.
+Box 3 was our only AMD machine, running a fx-8350 CPU. This machine, while also without hyper-threading, still handled \clocode{pmap} better than Box 2. It did not, however, reach the expected speedup - as an 8 core CPU, using reducers should show a 700\% improvement, but it actually ran near a 300\% improvement. The fx-8350 CPU is technically an 8 core CPU; it's architecture, where each pair of cores is packaged into a module that shares some components between cores~\cite{McIntyre:2012}, may have something to do with this.
 \subsection{Discussion}\label{sec:discussion}
 
 We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD fx-8350 machine tested did not show this same pattern. We suspect that the somewhat novel Bulldozer architecture, where each pair of cores is packaged into modules that share components~\cite{McIntyre:2012},  was a factor. 
@@ -516,7 +516,7 @@ We conclude that the Reducers library is a significant improvement over \clocode
 Both reducers and \clocode{pmap} show machine-specific behaviors, likely due to the differing micro-architectures of the respective CPUs. \clocode{r/fold} works the same as \clocode{r/fold + r/map}, confirming that using r/map and other functions in proper modular style does not lead to slower behavior.
 
 \subsection{Future Work}\label{sec:future}
-During our study, we found a number of issues we were unable to address - the most visible of which is the poor performance of \clocode{pmap} - finding that a parallel function is slower than a serial function is unexpected, to say the least. While we do have a hypothesis as to why we see this behavior, we do not have enough information to conclude our hypothesis is correct. Reducers gives us another round of questions; how does reducers decide how many threads it creates? Is there an optimal number of threads? What effect does CPU architecture have on Clojure's concurrency?	
+Over the course of the study, we found several new questions. The most notable of which is the poor performance of \clocode{pmap} - finding that a parallel function is running slower than a serial function is unusual. While we do have a hypothesis as to why we see this behavior, we do not have enough information to conclude our hypothesis is correct. Reducers gives us another round of questions; how does reducers decide how many threads it creates? Is there an optimal number of threads? What effect does CPU architecture have on Clojure's concurrency?	
 These questions have major implications toward the usage of Clojure reducers and \clocode{pmap} in production environments; \clocode{pmap} has significant qualifiers that need to be addressed in order to produce effective code.
 
 \section{Acknowledgments} 
