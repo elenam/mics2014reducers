@@ -110,7 +110,7 @@ Henry Fellows, Joe Einertson, and Elena Machkasova \\
 Computer Science Discipline \\
 University of Minnesota Morris\\
 Morris, MN 56267\\
-??, eine0017@umn.edu, elenam@umn.edu
+fello056@umn.edu, eine0017@umn.edu, elenam@umn.edu
 }
 
 
@@ -222,7 +222,7 @@ Additionally, Clojure provides drop-in replacements for the built in higher orde
 
 
 \subsection{Introduction to pmap}\label{sec:pmap}
-\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguments as \clocode{map}, \clocode{pmap} is a drop-in replacement. For example, one can replace \clocode{map} in the example in Section~\ref{sec:clojure} by \clocode{pmap}, and (with sufficiently large input data) it will utilize multiple cores on a computer, likely resulting in increase in speed:   
+A parallel version of \clocode{map} called \clocode{pmap} was an early implementation of a parallel of a higher-order function. With the same arguments as \clocode{map}, \clocode{pmap} is a drop-in replacement. For example, one can replace \clocode{map} in the example in Section~\ref{sec:clojure} by \clocode{pmap}, and (with sufficiently large input data) it will utilize multiple cores on a computer, likely resulting in increase in speed:   
 \begin{verbatim}
 (pmap add1 [0 1 2 3 4])
 => (1 2 3 4 5)
@@ -249,14 +249,20 @@ impose stricter restrictions on functions that they take as parameters.
 The names of the reducer functions for the most part directly parallel the corresponding serial functions. For instance, \clocode{r/map} is a reducer version of \clocode{map}, \clocode{r/filter} is a reducer version of \clocode{filter}, and so on. A notable exception is \clocode{r/fold} which is a reducer version of \clocode{reduce}.
 %, focusing on concurrent versions of the native high-order functions.  
 
-Reducers are built on Java Firk/Join framework that manages distribution of tasks between multiple threads of control. The task balancing algorithm allows idle threads to ``steal'' work from threads that are busy, thus providing efficient work distribution between processors. However, one has to be careful, as too large number of threads may result in too frequent context switching attempts, which may stall the program (the effect known as {\it thread thrashing}). 
+Reducers are implemented using Java Fork/Join framework that manages distribution of tasks between multiple threads of control. The task balancing algorithm allows idle threads to ``steal'' work from threads that are busy, thus providing efficient work distribution between processors. However, one has to be careful, as too large number of threads may result in too frequent context switching attempts, which may stall the program (the effect known as {\it thread thrashing}). 
 
 
-In addition to providing efficient work distribution via Fork/Join, reducers optimize the number of collection traversals, while utilizing parallel processing. Consider, for example, a serial \clocode{reduce} applied to the result of a serial \clocode{map}. Note that \clocode{map} is lazy and \clocode{reduce} is eager, i.e. it fully evaluates a sequence it is applied to. Given that \clocode{map} returns a lazy collection, only evaluation of \clocode{reduce} will force \clocode{map} to be evaluated. However, if one were to attempt to perform this computation in parallel, they would have a  problem since by the time the lazy result of   \clocode{map} is returned to \clocode{reduce}, the execution is back to a single-threaded model, thus making it impossible to take advantage of a hypothetical parallel execution of  \clocode{map}. 
+In addition to providing efficient work distribution via Fork/Join, reducers optimize the number of collection traversals, while utilizing parallel processing. 
+%In order to understand how reducers operate, we consider hypothetical scenarios of designing parallel versions of \clocode{map} and \clocode{reduce}. 
+Consider, for example, a serial \clocode{reduce} applied to the result of a serial \clocode{map}. Note that \clocode{map} is lazy and \clocode{reduce} is eager, i.e. it fully evaluates a sequence it is applied to. Given that \clocode{map} returns a lazy collection, only evaluation of \clocode{reduce} will force \clocode{map} to be evaluated. However, if one were to attempt to perform this computation in parallel, they would have a  problem since by the time the lazy result of   \clocode{map} is returned to \clocode{reduce} and needs to be evaluated, the execution is back to a single-threaded model, thus making it impossible to take advantage of a hypothetical parallel execution of  \clocode{map}. 
 
-An alternative to this scenario would be to force \clocode{map} to fully execute by wrapping it into a \clocode{doall}. This would force parallel execution of  \clocode{map}. However, once its execution is done, \clocode{reduce} (regardless of whether parallel or not) will traverse the collection again. This means that we would have a separate collection traversal for each function applied to it. 
+A straightforward  alternative to this scenario would be to force \clocode{map} to fully execute by wrapping it into a \clocode{doall}. This would force parallel execution of  \clocode{map}, assuming that it is capable of such execution. However, once its execution is done, \clocode{reduce} (regardless of whether parallel or not) will traverse the collection again, to perform its own operation on each element. This means that we would have a separate collection traversal for each function applied to it. 
 
-Reducers allow us to have the best of both worlds: functions applied to a collection via \clocode{r/map}, \clocode{r/filter}, etc., are accumulated, but not applied until \clocode{r/fold} is applied. Once \clocode{r/fold} is applied, the collection is divided into chunks that are distributed among threads, and all accumulated functions are applied to each element as a part of the reducing process. Thus the collection is traversed exactly once (when \clocode{r/fold} is applied), and in parallel. 
+Reducers allow us to avoid these issues: functions applied to a collection via \clocode{r/map}, \clocode{r/filter}, etc., are accumulated, but not applied until \clocode{r/fold} is applied. Once \clocode{r/fold} is applied, the collection is divided into chunks that are distributed among threads, and all accumulated functions are applied to each element as a part of the reducing process.
+Thus the collection is traversed exactly once (when \clocode{r/fold} is applied), and in parallel. 
+
+For instance, if we apply a square function via \clocode{r/map}, then filter the result by selecting elements larger than a certain threshold via \clocode{r/filter}, and finally sum up the resulting elements via \clocode{r/fold}, the collection (assuming that it is sufficiently large) would be divided among the CPU cores, and all three operations (squaring, checking against the threshold, and the summation, if needed) would be applied to each element at the same time. 
+The details of how this work is allocated to different threads and different cores lie in the implementation of the Fork/Join framework, and may not be immediately obvious. 
 
 %Built on Java's ForkJoin framework, Reducers uses the same data structures as the original functions, allowing drop-in replacement for many use cases.
 %\emcomment{Elena's section}
