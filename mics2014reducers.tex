@@ -144,6 +144,7 @@ Reducers was found to provide a significant performance gain, in all situations,
 	Recently, Rich Hickey released a new library for the Clojure programming language that introduces major changes to the concurrency tools offered in Clojure's core library. Clojure is a dialect of Lisp, developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}, with a focus on concurrency and portability. By compiling into Java Bytecode, Clojure offers programmers ultra-portible code that leverages the widespread nature of the Java virtual machine. 
 
 \section{Background}\label{sec:background}
+This section is an introduction to Clojure, the Reducers library, and the \clocode{pmap} function. Readers familiar with these topics may wish to skip to section three.
 
 \subsection{Clojure}\label{sec:clojure}
 The Lisp family of languages has several features in common, the most visible of which is the polish-prefix notation. Cojure, as a Lisp, uses the polish-prefix notation, which can be generalized to \clocode{(function arg1 arg2 ... argN)}. For example, after interpretation, 
@@ -402,7 +403,7 @@ A typical mode was to find that the distributon was in two peaks - the serial me
 
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components ~\cite{McIntyre:2012} was a factor. \clocode{pmap}, when properly executing in parallel was somewhat slower, but was often executing in serial time. In several instances \clocode{pmap} was up to x\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
+We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components~\cite{McIntyre:2012} was a factor. \clocode{pmap}, when properly executing in parallel was somewhat slower, but was often executing in serial time. In several instances \clocode{pmap} was up to x\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
