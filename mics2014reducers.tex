@@ -174,7 +174,7 @@ Below we introduce vectors, an important Clojure data type for our discussion --
 (get [1 2 3 4 5] 3)
 => 4
 \end{verbatim}
-Here, \clocode{get} retrives an element from a vector at index three (starting at zero), with the syntax \clocode{(get collection index)}.
+Here, \clocode{get} retrieves an element from a vector at index three (starting at zero), with the syntax \clocode{(get collection index)}.
 \emcomment{The example above is still no explained}
 \emcomment{Remember, most of your target audience have never seen a Lisp-like language}
 Lisps have a philosophy of treating code as data, meaning that all functions can take functions (or other code) as arguments. Because of that philosophy, most Lisps, including Clojure, provide a rich set of higher-order functions that allow for powerful manipulation of data. Clojure includes \clocode{map}, a function that takes a function and a collection and then applies the function to every item in the collection, returning the resulting collection. The type of the collection that gets returned is not a vector, but a more general collection type, so it is included in parentheses, and not brackets. However, for the most part this distinction is not important for our discussion. 
