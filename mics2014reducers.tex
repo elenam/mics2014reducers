@@ -210,15 +210,14 @@ Clojure uses immutable datatypes by default; the value of an immutable datatype 
 (pmap add1 [1 2 3 4])
 => (2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing as possible, only returning results as needed ; that is, it can occassionally appear to evaluate as a serial function.\emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation), and always in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to force eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing as possible, only returning results as needed ; that is, it can occassionally appear to evaluate as a serial function.\emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation), and always in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to ensure eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
-;because doall forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four).
 (time (doall (pmap  expensive-function  [1 2 3 4])))
 => 3000 ms
 \end{verbatim}
-
+When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four).
  \emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
 
 
@@ -241,6 +240,10 @@ Name & Description \\
 \hline
 map + reduce & serial map, serial reduce \\
 pmap + reduce & parallel map, serial reduce \\
+map + r/fold & serial map, parallel reduce \\
+pmap + r/fold & parallel map, parallel reduce\\
+r/map + r/fold & parallel map, parallel reduce\\
+r/fold & parallel reduce\\
 \hline
 \end{tabular}
 \end{center}
@@ -343,7 +346,7 @@ This test used a collection of 100,000 random integers uniformly distributed bet
  Box 3 has an AMD FX-8350 cpu, with 8 cores, running Fedora 18. 
  \end{itemize}
   
-The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant.
+The full set of tests was run three times on each machine. The first run is discarded due to Java virtual machine warm-up, a period where the program runs significantly slower than it would normally ~\cite{Blackburn:2008} . This period is caused by the JVM preforming dynamic optimization and lazy loading relevant portions of code. In order to provide data that is unambiguous and easy to interpret, we omit that portion of the data from the results. It is important to note that the ratio between each portion of a test remained constant, despite warmup.
 
 \emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
@@ -396,14 +399,16 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \end{table}
 
 A typical mode was to find that the distributon was in two peaks - the serial methods and the parallel methods; 
-
+\begin{figure}[h]
 \includegraphics[trim = 10mm 0mm 30mm 0mm, clip, width = 16cm,height = 10cm]{PSP-B1}
+\end{figure}
+\begin{figure}[h!]
 \includegraphics[trim = 10mm 0mm 0mm 5mm, clip, width = 16cm,height = 11cm]{SSP-B1}
-
+\end{figure}
 
 
 \subsection{Discussion}\label{sec:discussion}
-We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components~\cite{McIntyre:2012} was a factor. \clocode{pmap}, when properly executing in parallel was somewhat slower, but was often executing in serial time. In several instances \clocode{pmap} was up to x\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
+We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD Fx-8350 machine tested did not show this same pattern - We suspect that the somewhat novel Bulldozer architecture, where each pair of cores are packaged into modules that share components~\cite{McIntyre:2012},  was a factor. \clocode{pmap}, when properly executing in parallel was somewhat slower, but was often executing in serial time. In several instances \clocode{pmap} was up to 244\% slower than serial methods. We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. 
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
