@@ -515,7 +515,9 @@ Another curious observation about  \clocode{pmap} is that it can produce running
 
 \section{Conclusions and future work}\label{sec:conclusion}
 
-We conclude that the Reducers library is a complete improvement over \clocode{pmap}, providing a faster, more stable, and predictable platform for concurrency. \clocode{pmap} is highly dependent on environmental conditions and is difficult to produce working code with. Both reducers and \clocode{pmap} show machine-specific behaviors, likely due to the differing micro-architectures of the respective CPUs. \clocode{r/fold} works the same as \clocode{r/fold + r/map}, confirming that using r/map and other functions in proper programming style does not lead to slower behavior.
+We conclude that the Reducers library is a significant improvement over \clocode{pmap} in efficiency, providing a faster, more stable, and predictable platform for concurrency. \clocode{pmap} is highly dependent on environmental conditions, especially if used simply as replacement for \clocode{map} without any specific adjustments for multi-core load balancing. 
+% and is difficult to produce working code with. 
+Both reducers and \clocode{pmap} show machine-specific behaviors, likely due to the differing micro-architectures of the respective CPUs. \clocode{r/fold} works the same as \clocode{r/fold + r/map}, confirming that using r/map and other functions in proper modular style does not lead to slower behavior.
 
 \subsection{Future Work}\label{sec:future}
 During our study, we found a number of issues we were unable to address - the most visible of which is the poor performance of \clocode{pmap} - finding that a parallel function is slower than a serial function is unexpected, to say the least. While we do have a hypothesis as to why we see this behavior, we do not have enough information to conclude our hypothesis is correct. Reducers gives us another round of questions; how does reducers decide how many threads it creates? Is there an optimal number of threads? What effect does CPU architecture have on Clojure's concurrency?	
