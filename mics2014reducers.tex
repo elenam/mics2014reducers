@@ -209,12 +209,15 @@ Additionally, Clojure provides drop-in replacements for the built in higher orde
 
 
 \subsection{Introduction to pmap}\label{sec:pmap}
-\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguements as \clocode{map}, \clocode{pmap} is a drop-in replacement. 
+\clocode{pmap} was an early attempt at providing a parallel version of map; with the same arguements as \clocode{map}, \clocode{pmap} is a drop-in replacement. For example, one can replace \clocode{map} in the example in Section~\ref{sec:clojure} by \clocode{pmap}, and (with sufficiently large input data) it will utilize multiple cores on a computer, likely resulting in increase in speed:   
 \begin{verbatim}
-(pmap add1 [1 2 3 4])
-=> (2 3 4 5)
+(pmap add1 [0 1 2 3 4])
+=> (1 2 3 4 5)
 \end{verbatim}
-Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing as possible, only returning results as needed ; that is, it can occassionally appear to evaluate as a serial function.\emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}. If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e eager evaluation), and always in parallel. \clocode{doall} in Clojure forces eager evaluation on lazy expressions. In all of our tests, \clocode{doall} is used to ensure eager evaluation. If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
+Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing as possible, only returning results as needed; that is, it can occasionally appear to evaluate as a serial function. %\emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}.
+If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e. eager evaluation), and always \emcomment{are you sure that it's always in parallel?} in parallel. A function \clocode{doall} in Clojure forces eager evaluation on lazy expressions. 
+%In all of our tests, \clocode{doall} is used to ensure eager evaluation. % doesn't belong here
+If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
 (time (pmap expensive-function [1 2 3 4]))
 => 12000 ms 
@@ -222,7 +225,7 @@ Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing a
 => 3000 ms
 \end{verbatim}
 When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four).
- \emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
+ %\emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
 
 
 \subsection{Introduction to reducers}\label{sec:reducers}
