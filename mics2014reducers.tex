@@ -238,7 +238,7 @@ If we imagine a long running function, \clocode{expensive-function}, that runs f
 (time (doall (pmap  expensive-function  [1 2 3 4])))
 => 3000 ms
 \end{verbatim}
-When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four). Of course, this is an idealized example; non-parallel operations and overhead make practical examples messier.
+When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four). Of course, this is an hypothetical example; non-parallel operations and overhead make practical examples messier.
  %\emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
 
 
@@ -442,7 +442,7 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \caption{Sum-Sqrt Averages.}\label{table:sum-primes}
 \end{table}
 
-A typical mode was to find that the distributon was in two peaks - the serial methods and the parallel methods; 
+A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods; 
 \begin{figure}[h]
 \includegraphics[trim = 10mm 0mm 30mm 0mm, clip, width = 16cm,height = 10cm]{PSP-B1}
 \end{figure}
@@ -460,7 +460,8 @@ We have found that the reducers library, in all tested cases, reduces the execut
 
 
 \subsection{Future Work}\label{sec:future}
-(intro...) The poor performance of \clocode{pmap} - finding that a parallel function is slower than a serial function is unexpected, and pinpointing why could be helpful to concurrent programming.
+During our study, we found a number of issues we were unable to address - the most visible of which is the poor performance of \clocode{pmap} - finding that a parallel function is slower than a serial function is unexpected, to say the least. While we do have a hypothesis as to why we see this behavior, we do not have enough information to conclude our hypothesis is correct. Reducers gives us another round of questions; how does reducers decide how many threads it creates? Is there an optimal number of threads? What effect does CPU architecture have on Clojure's concurrency?	
+These questions have major implications toward the usage of Clojure reducers and \clocode{pmap}, and ...
 
 
 
