@@ -439,8 +439,8 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + map & r/fold\\
 \hline
 Box 1 & 2084.6 & 604.5 & 597.1 & 2065.7 & 535.8\\
-Box 2 & 2567.7 & 2585.6 & 2774.0 & 1269.3 & 1269 \\
-Box 3 & 2411.3 & 2426.6 & 2647.9 & 562.9 & 557.6\\
+Box 2 & 2802.8 & 2567.7 & 2585.6 & 2774.0 & 1269 \\
+Box 3 & 2662.2 & 2411.3 & 2426.6 & 2647.9 & 557.6\\
 \hline
 \end{tabular}
 \end{center}
@@ -479,10 +479,17 @@ The first three tests, execepting Box 2, run in serial time. Box 2 runs greater 
 Figure~\ref{figure:serial} shows the distribution of functions that run in serial time. Only \clocode{reduce + map} and \clocode{r/fold + map} run in serial time.
 
 A typical mode was to find that the distribution was in two peaks - the serial methods and the parallel methods. Figure~\ref{figure:parallel} is slightly atypical - \clocode{reduce} + \clocode{pmap} was functioning properly, and running in parallel time.
+
 \subsection{Box discussion}\label{sec:boxdiscussion}
+
 \hfcomment{move into discussion?}
 \subsubsection{Box 1}
-Box 1, with an Intel I7-4700Mq CPU, was the fastest machine tested by a fair margin. It was also the only box where \clocode{pmap} ran faster than \clocode{reduce + map}
+
+Box 1, with an Intel I7-4700Mq CPU, was the fastest machine tested by a fair margin. It was also the only box where \clocode{pmap} ran faster than \clocode{reduce + map}. We have suspect that \clocode{pmap} is causing thread thrashing, and given that this machine is the only one with hyper-threading, it seems likely that hyperthreading has some effect on the CPU's ability to manage large amounts of threads without thrashing.
+
+\subsubsection{Box 2}
+
+Box 2, with an Intel I5-650 CPU, was the slowest machine tested. Notably, \clocode{pmap} ran much slower than serial time on compare-sum-sqrt. This machine does not have hyper threading, and \clocode{pmap}'s performance in that test is what lead us on to thread thrashing in the first place.
 
 \subsection{Discussion}\label{sec:discussion}
 
