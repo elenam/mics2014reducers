@@ -143,9 +143,10 @@ In this study, we focus on testing the various methods of parallel processing in
 
 \section{Introduction}\label{sec:intro}
 
-	 Clojure is a dialect of Lisp, developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}, with a focus on concurrency and portability. By compiling into Java Bytecode, Clojure offers programmers ultra-portable code that leverages the widespread nature of the Java virtual machine. Recently, Rich Hickey released a new library, reducers, for the Clojure programming language that introduces major changes to the concurrency tools offered in Clojure's core library. A subject of research we were interested in pursuing was the development of concurrent algorithms; we thought that pursuing run-time comparison of parallel methods would be a good way of furthering that topic. Eventually, we would like to find or make a way of developing parallel algorithms that are accessible to those without a significant OS background. To that end, we sought to compare some of the built in methods for adding concurrency to Clojure code. We provide a introduction~/ref{background} to Clojure, reducers, and another concurrency tool, pmap. Our methodology is presented in section~\ref{methodology}, leading to our results, discussion, and future work in section~\ref{sec:results-disc}.
+	 Clojure is a dialect of Lisp, developed and first introduced in 2007 by Rich Hickey~\cite{Hickey:2008}, with a focus on concurrency and portability. By compiling into Java bytecode, Clojure offers programmers ultra-portable code that leverages the widespread nature of the Java virtual machine. Recently, Rich Hickey released a new library, reducers, for the Clojure programming language that introduces major changes to the concurrency tools offered in Clojure's core library. A subject of research we were interested in pursuing was the development of concurrent algorithms. A run-time comparison of parallel methods is a good way of exploring that topic. Since Clojure provides high-level libraries that allow writing correct and efficient parallel code without an extensive OS background, exploring Clojure reducers library can open a way into writing parallel algorithms to students early in their academic career and to others with a similar degree of preparation. 
+To that end, we sought to compare some of the built in methods for adding concurrency to Clojure code. We provide a introduction~\ref{sec:background} to Clojure, reducers, and another concurrency tool, pmap. Our methodology is presented in section~\ref{sec:methodology}, leading to our results, discussion, and future work in sections~\ref{sec:results-disc} and~\ref{sec:conclusion}.
 
-\emcomment{obviously, more is needed}
+%\emcomment{obviously, more is needed}
 
 \section{Background}\label{sec:background}
 This section is an introduction to Clojure, the Reducers library, and the \clocode{pmap} function. 
@@ -350,7 +351,7 @@ Here the work of determining the primality of the numbers is moved into a mappin
 %\joecomment{Is this redundant now with the section describing our test structure?}
 
 The data used for this test is a collection of 100,000 random integers uniformly distributed between 0 and 1 billion. This test was run 100 times, with 100 different data sets. 
-\emcomment{with 100 different data sets? Or repeated, for averages? Or what?}
+%\emcomment{with 100 different data sets? Or repeated, for averages? Or what?}
 %\joecomment{Does this belong in a table? If so, someone else want to do it? :) Never done a LaTeX table and not too excited to learn...}
 %\emcomment{Yes -- No (I don't want to) -- will do.}
 
@@ -479,12 +480,12 @@ Figure~\ref{figure:serial} shows the distribution of function run times for the 
 
 A typical mode for a run of all 6 configurations was to find that the distribution was in two peaks: one for the functions running in the serial tiem and and the other one for those taking advantage of parallelization. Figure~\ref{figure:parallel} is slightly atypical since \clocode{reduce} + \clocode{pmap} was grouped with the functions runing in parallel time rather than serial time. 
 
-\subsection{Machine differences}\label{sec:boxdiscussion}
+\subsection{Possible influence of machine differences }\label{sec:boxdiscussion}
 
-\hfcomment{move into discussion?}
+%\hfcomment{move into discussion?}
 \subsubsection{Box 1}
 
-Box 1, with an Intel I7-4700Mq CPU, was the fastest machine tested by a fair margin. It was also the only box where \clocode{pmap} ran faster than \clocode{reduce + map}. We have suspect that \clocode{pmap} is causing thread thrashing, and given that this machine is the only one with hyper-threading, it seems likely that hyperthreading has some effect on the CPU's ability to manage large amounts of threads without thrashing. Reducers ran close to the expected maximum speedup given the number of cores - 300\%.
+Box 1, with an Intel I7-4700Mq CPU, was the fastest machine tested by a fair margin. It was also the only box where \clocode{pmap} ran faster than \clocode{reduce + map}. We suspect that \clocode{pmap} is causing thread thrashing, and given that this machine is the only one with hyper-threading, it seems likely that hyperthreading has some effect on the CPU's ability to manage large amounts of threads without thrashing. Reducers ran close to the expected maximum speedup given the number of cores - 300\%.
 
 \subsubsection{Box 2}
 
