@@ -215,7 +215,8 @@ Additionally, Clojure provides drop-in replacements for the built in higher orde
 => (1 2 3 4 5)
 \end{verbatim}
 Importantly, \clocode{pmap} is semi-lazy; it tries to use as little processing as possible, only returning results as needed; that is, it can occasionally appear to evaluate as a serial function. %\emcomment{This is ambiguous: I think you mean as little processing as possible, but it reads like it's trying to work sequentially}.
-If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e. eager evaluation), and always \emcomment{are you sure that it's always in parallel?} in parallel. A function \clocode{doall} in Clojure forces eager evaluation on lazy expressions. 
+If the value is used (by a function, for example), pmap will evaluate the entire expression immediately (i.e. eager evaluation), and always %\emcomment{are you sure that it's always in parallel?}
+ in parallel~\cite{Pmap}. A function \clocode{doall} in Clojure forces eager evaluation on lazy expressions. 
 %In all of our tests, \clocode{doall} is used to ensure eager evaluation. % doesn't belong here
 If we imagine a long running function, \clocode{expensive-function}, we can time it and see the difference \clocode{doall} makes.
 \begin{verbatim}
