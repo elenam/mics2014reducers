@@ -241,17 +241,17 @@ If we imagine a long running function, \clocode{expensive-function}, that runs f
 \end{verbatim}
 When \clocode{doall} forces eager evaluation, it runs faster - roughly by a factor of the number of cores (in this case, four). Of course, this is an hypothetical example; non-parallel operations and overhead make practical examples messier.
  %\emcomment{doall is one way of forcing evaluation; you should mention that if a result is used (e.g. by reduce) then it would evaluate. }
+\clocode{pmap} utilizes multi-threading, creating a thread for every chunk of the collection it is trying to process.  Too large number of threads may result in too frequent context switching attempts, which may stall the program (the effect known as {\it thread thrashing}). 
 
 
 \subsection{Introduction to reducers}\label{sec:reducers}
-Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. Reducers provides higher-order functions for concurrent manipulation of collections. 
+Reducers library was released by Rich Hickey in May 2012~\cite{HickeyReducers}. Reducers provides higher-order functions for parallel manipulation of collections. 
 Most functions provided by reducers are drop-in replacements for their serial counterparts, requiring minimal changes to a program when changing it from serial to parallel, although they may
 impose stricter restrictions on functions that they take as parameters. 
-The names of the reducer functions for the most part directly parallel the corresponding serial functions. For instance, \clocode{r/map} is a reducer version of \clocode{map}, \clocode{r/filter} is a reducer version of \clocode{filter}, and so on. A notable exception is \clocode{r/fold} which is a reducer version of \clocode{reduce}.
+The names of the reducer functions for the most part directly match the corresponding serial functions. For instance, \clocode{r/map} is a reducer version of \clocode{map}, \clocode{r/filter} is a reducer version of \clocode{filter}, and so on. A notable exception is \clocode{r/fold} which is a reducer version of \clocode{reduce}.
 %, focusing on concurrent versions of the native high-order functions.  
 
-Reducers are implemented using Java Fork/Join framework that manages distribution of tasks between multiple threads of control. The task balancing algorithm allows idle threads to ``steal'' work from threads that are busy, thus providing efficient work distribution between processors. However, one has to be careful, as too large number of threads may result in too frequent context switching attempts, which may stall the program (the effect known as {\it thread thrashing}). 
-
+Reducers are implemented using Java Fork/Join framework that manages distribution of tasks between multiple threads of control. The task balancing algorithm allows idle threads to ``steal'' work from threads that are busy, thus providing efficient work distribution between processors. 
 
 In addition to providing efficient work distribution via Fork/Join, reducers optimize the number of collection traversals, while utilizing parallel processing. 
 %In order to understand how reducers operate, we consider hypothetical scenarios of designing parallel versions of \clocode{map} and \clocode{reduce}. 
@@ -505,7 +505,7 @@ There is a variety of collection types, with various degree of laziness, that ca
 Further studies are needed to determine the exact collection type and how it affects the subsequent application of reduction. 
 One should note that \clocode{pmap} and reducers were never designed to work together, so it is not surprising that the benefits of  \clocode{pmap} do not prompt benefits of \clocode{r/fold}. 
 
-Another curious observation about  \clocode{pmap} is that it can produce running times ranging from close to the best parallel runs (such as just r/fold configuration) to times worse than serial. In its best results \clocode{reduce} + \clocode{pmap} ran much faster than serial time, and was still slower than reducers only by 15\%. However, in the worst cases  \clocode{pmap} was up to 244\% slower than serial methods. We observed that  \clocode{pmap} generates a large thread poll, so thread thrashing (see Section~\ref{sec:reducers}) is a likely explanation for this slow-down. Unless one has fine-grained control over the number of threads \clocode{pmap} generates, it is difficult to predict whether using  \clocode{pmap} would be beneficial for a given problem on a given machine. 
+Another curious observation about  \clocode{pmap} is that it can produce running times ranging from close to the best parallel runs (such as just r/fold configuration) to times worse than serial. In its best results \clocode{reduce} + \clocode{pmap} ran much faster than serial time, and was still slower than reducers only by 15\%. However, in the worst cases  \clocode{pmap} was up to 244\% slower than serial methods. We observed that  \clocode{pmap} generates a large thread poll, so thread thrashing (see Section~\ref{sec:pmap}) is a likely explanation for this slow-down. Unless one has fine-grained control over the number of threads \clocode{pmap} generates, it is difficult to predict whether using  \clocode{pmap} would be beneficial for a given problem on a given machine. 
 
 %We briefly looked into the cause, but were unable to gather a statistically significant amount of data. What data we do have points to a large amount of threads being created, leading to excessive context switching. When \clocode{pmap} was working, \clocode{reduce} + \clocode{pmap} ran faster than serial time, but was still slower than reducers by 15\%. The simplest description of \clocode{pmap} is inconsistency - there is no obvious way to predict whether \clocode{pmap} will run properly on a given machine. Beneficial performance of \clocode{pmap} seem to be correlated with computationally expensive mapping operations (which is not surprising), but more studies would be needed to conclude this with certainty. 
 
