@@ -411,8 +411,9 @@ The full set of tests was run three times on each machine. The first run is disc
 
 %\emcomment{Need to explain why we aren't using a filter here for primality testing examples: for consistency with pmap?}
 
-\section{Results}\label{sec:results}
-In this section we show the results of running our tests across the machines mentioned above: in our tables, we sometimes use red instead of reduce to achieve proper formatting. For brevity, we use /clocode{reduce + map} to provide a baseline; tests running at similar times are noted as running at 'serial time'.
+\section{Results and discussion}\label{sec:results-disc}
+\subsection{Results}\label{sec:results}
+In this section we show the results of running our tests across the machines mentioned above: in our tables, we sometimes use red instead of reduce to achieve proper formatting. We use \clocode{reduce + map} to provide a baseline which is just a serial run on one core; tests running at similar times are noted as running at {\it serial time}.
 
 \begin{table}[h!]
 \begin{center}
