@@ -137,7 +137,6 @@ In this study, we focus on testing the various methods of parallel processing in
 
 
  \newpage
-%this causes problems when compiling.
 
 \setcounter{page}{1}
 
@@ -195,6 +194,12 @@ The next of the major high-order functions is \clocode{filter}, which takes a pr
 => (2 4)
 \end{verbatim}
 Another common feature in Clojure is laziness. Laziness is the concept of delaying evaluation of an expression untill the value it returns is needed. For example, \clocode{if} statements in many languages are lazy. In pseudocode, \clocode{if a then b else c} is an example of lazy evaluation. Normally, \clocode{b} and \clocode{c} are only evaluated depending on the value of \clocode{a}, and the \clocode{if} wouldn't work if both \clocode{b} and \clocode{c} were evaluated. 
+In Clojure, the most common example of lazyness, other than \clocode{if}, is sequences. For example, if you have a sequence that has a hundred expressions but only retreive the first 50, only the first 50 are evaluated. More interestingly, you can have infinite sequences - the function \clocode{range}, called with no arguments, returns the infinite sequence of integers:
+\begin{verbatim}
+(take 10 (range))
+=> (0 1 2 3 4 5 6 7 8 9)
+\end{verbatim}
+Of course, these values only exist after they are requested by \clocode{take}.
 \emcomment{give an example}
 %\emcomment{Explain the concept of laziness since you use it later}
 
