@@ -1,0 +1,123 @@
+\documentclass{beamer}
+\usetheme{Montpellier}
+\usecolortheme{dolphin}
+
+\usepackage{graphicx} %For jpg figure inclusion
+\usepackage{times} %For typeface
+\usepackage{epsfig}
+\usepackage{color} %For Comments
+\usepackage[all]{xy}
+\usepackage{float}
+\usepackage{subfigure} 
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{parskip}
+
+%% Elena's favorite green (thanks, Fernando!)
+\definecolor{ForestGreen}{RGB}{34,139,34}
+%% Joe's Color.
+\definecolor{JoesGold}{RGB}{204,102,0}
+%% Henry's Color.
+\definecolor{Teal}{RGB}{2,132,130}
+% Uncomment this if you want to show work-in-progress comments
+\newcommand{\comment}[1]{{\bf \tt  {#1}}}
+% Uncomment this if you don't want to show comments
+%\newcommand{\comment}[1]{}
+\newcommand{\emcomment}[1]{\textcolor{ForestGreen}{\comment{Elena: {#1}}}}
+\newcommand{\joecomment}[1]{\textcolor{JoesGold}{\comment{Joe: {#1}}}}
+\newcommand{\hfcomment}[1]{\textcolor{Teal}{\comment{Henry: {#1}}}}
+\newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
+\newcommand{\clocode}[1]{{\texttt {#1}}}
+
+\begin{document}
+\title{Insert Title}
+\date{\today}
+
+\frame{\frametitle{Table of contents}\tableofcontents[currentsection]} 
+
+\begin{frame}[fragile]
+	\frametitle{introduction}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Overview of topic}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Intro to Clojure}
+	\begin{itemize}
+  	 \item Clojure is a dialect of Lisp
+  	 \item First introduced in 2007 by Rich Hickey
+  	 \item Immutable data structures
+       \item Built-in support for concurrency.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Functional Languages}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Polish Prefix Notation}
+can be generalized to \clocode{(function arg1 arg2 ... argN)}.
+	\begin{verbatim}
+	(+ 2 3)
+	=> 5
+	\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Basic Syntax}
+Basic syntax: \clocode{(defn name [args] expr)}
+	\begin{verbatim}
+	(defn add1 [num] (+ num 1))
+	(add1 4)
+	=> 5
+	\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Vectors}
+A type of collection in Clojure
+Accessing items by index is $O(log_{32}n)$
+	\begin{verbatim}
+	(get [1 2 3 4 5] 3)	
+	=> 4
+	\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{High Order Functions}
+\hfcomment{mention code-as-data}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Map}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reduce}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Filter}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Lazy Evaluation}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Pmap}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reducers I}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reducers II}
+\end{frame}
+
+\end{document}
