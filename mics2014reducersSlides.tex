@@ -30,18 +30,26 @@
 \newcommand{\clocode}[1]{{\texttt {#1}}}
 
 \begin{document}
-\title{Insert Title}
+\title{Exploration of parallelization efficiency in the Clojure programming language}
 \date{\today}
+
+\begin{frame}
+\frametitle{Exploration of parallelization efficiency in the Clojure programming language}
+{\centering
+Midwest Instruction and Computing Symposium\par
+April 25, 2014\par
+Henry Fellows, Joe Einertson, and Elena Machkasova\par
+}
+\end{frame}
 
 \frame{\frametitle{Table of contents}\tableofcontents[currentsection]} 
 
 \begin{frame}[fragile]
-	\frametitle{introduction}
-
+\frametitle{Introduction}
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Overview of topic}
+\frametitle{Overview}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -60,13 +68,13 @@
 	\begin{itemize}
 	 \item Clojure is a functional language
   	 \item Treat computation as the evaluation of functions
-  	 \item functional languages avoid direct memory manipulation
+  	 \item Functional languages avoid direct memory manipulation
        \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Polish Prefix Notation}
-Can be generalized to \clocode{(function arg1 arg2 ... argN)}.
+Can be generalized to \clocode{(function arg1 ... argN)}.
 	\begin{verbatim}
 	(+ 2 3)
 	=> 5
@@ -91,44 +99,76 @@ A type of collection in Clojure
 \begin{frame}[fragile]
 \frametitle{High Order Functions}
 %\hfcomment{mention code-as-data}
-{\centering
- Functions can take functions as arguments\par
-} 
-\begin{verbatim}
-(map add1 [0 1 2 3 4])
-=>(1 2 3 4 5)
-\end{verbatim}
+ Functions can take functions as arguments
+	\begin{verbatim}
+	 (map add1 [0 1 2 3 4])
+	 =>(1 2 3 4 5)
+	\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Reduce}
-known as fold in other Lisps
-\begin{verbatim}
-(reduce + [1 2 3])
-=> 6
-\end{verbatim}
+Also known as fold in other Lisps
+	\begin{verbatim}
+	 (reduce + [1 2 3])
+	 => 6
+	\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Lazy Evaluation}
 	\begin{itemize}
 	  \item Delaying evaluation until the value is needed.
-  	  \item Possible infinite sequences
-  	  \item Has roots in Lambda Calculus
-  	  \item Avoids the use of State as a programming tool.
-       \end{itemize}
+  	  \item infinite sequences - so long as it is not all called.
+       \end{itemize}	
+	\begin{verbatim}
+	 (take 10 (range))
+	 => (0 1 2 3 4 5 6 7 8 9)
+	\end{verbatim}
+\end{frame}
+
+\begin{frame}
+\frametitle{Concurrency}
+	\begin{itemize}
+	 \item Most processors are now being built with multiple cores.
+	 \item Concurrency is the execution of multiple computations simultaneously.
+	 \item Programming concurrent programs is \textit{hard}.
+	 \item Deadlocking: two tasks are waiting for resources that the other task holds.
+	\end{itemize}	
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Pmap}
+	\begin{itemize}
+	 \item A parallel version of \clocode{map}
+	 \item Has the same syntax as \clocode{map}.
+	 \item \clocode{pmap} is lazy.
+	 \item \clocode{doall} forces eager evaluation. 
+	\end{itemize}	
+	\begin{verbatim}
+	(pmap add1 [0 1 2 3 4])
+	=> (1 2 3 4 5)
+	\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Reducers I}
+	\begin{itemize}
+	 \item Released by Rich Hickey in May 2012.
+	 \item Reducers provides parallel higher-order functions.
+	 \item Mostly drop-in replacements.
+	 \item Built on Java's fork/join framework.
+	\end{itemize}	
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Reducers II}
+	\begin{itemize}
+	 \item The names of reducers functions are the same as their serial counterparts
+	 \item Except reduce, which gets called \clocode{fold}
+	\end{itemize}	
+	In our code, and in this presentation, we use the prefix \clocode{r/} to differentiate between the core versions and the reducers versions.
+	
 \end{frame}
 
 \end{document}
