@@ -51,43 +51,37 @@
   	 \item First introduced in 2007 by Rich Hickey
   	 \item Immutable data structures
 	 \item Built-in support for concurrency.
-	 \item Runs on the JVM
+	 \item Runs on the Java Virtual Machine (JVM)
 	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Functional Languages}
 	\begin{itemize}
-	 \item Clojure is a Functional Laguage
+	 \item Clojure is a functional language
   	 \item Treat computation as the evaluation of functions
-  	 \item Has roots in Lambda Calculus
-  	 \item Avoids the use of State as a programming tool.
+  	 \item functional languages avoid direct memory manipulation
        \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Polish Prefix Notation}
-can be generalized to \clocode{(function arg1 arg2 ... argN)}.
+Can be generalized to \clocode{(function arg1 arg2 ... argN)}.
 	\begin{verbatim}
 	(+ 2 3)
 	=> 5
 	\end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Basic Syntax}
-Basic syntax: \clocode{(defn name [args] expr)}
+Basic function syntax: \clocode{(defn name [args] expr)}
 	\begin{verbatim}
 	(defn add1 [num] (+ num 1))
-	(add1 4)
-	=> 5
+	(add1 3)
+	=> 4
 	\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Vectors}
 A type of collection in Clojure
-Accessing items by index is $O(log_{32}n)$
 	\begin{verbatim}
 	(get [1 2 3 4 5] 3)	
 	=> 4
@@ -96,23 +90,33 @@ Accessing items by index is $O(log_{32}n)$
 
 \begin{frame}[fragile]
 \frametitle{High Order Functions}
-\hfcomment{mention code-as-data}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Map}
+%\hfcomment{mention code-as-data}
+{\centering
+ Functions can take functions as arguments\par
+} 
+\begin{verbatim}
+(map add1 [0 1 2 3 4])
+=>(1 2 3 4 5)
+\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Reduce}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Filter}
+known as fold in other Lisps
+\begin{verbatim}
+(reduce + [1 2 3])
+=> 6
+\end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Lazy Evaluation}
+	\begin{itemize}
+	  \item Delaying evaluation until the value is needed.
+  	  \item Possible infinite sequences
+  	  \item Has roots in Lambda Calculus
+  	  \item Avoids the use of State as a programming tool.
+       \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
