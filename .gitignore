@@ -4,6 +4,11 @@
 *.bbl
 *.log
 *.blg
+*.toc
+*.vrb
+*.nav
+*.snm
+*.out
 
 #reducers code stuff
 
