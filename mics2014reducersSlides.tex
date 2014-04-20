@@ -12,6 +12,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{parskip}
+\usepackage{multirow}
 
 %% Elena's favorite green (thanks, Fernando!)
 \definecolor{ForestGreen}{RGB}{34,139,34}
@@ -28,6 +29,8 @@
 \newcommand{\hfcomment}[1]{\textcolor{Teal}{\comment{Henry: {#1}}}}
 \newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
 \newcommand{\clocode}[1]{{\texttt {#1}}}
+\newcommand{\fast}[1]{\textcolor{ForestGreen}{#1}}
+\newcommand{\slow}[1]{\textcolor{magenta}{#1}}
 
 \begin{document}
 \title{Exploration of parallelization efficiency in the Clojure programming language}
@@ -101,7 +104,7 @@ Basic function syntax: \clocode{(defn name [args] expr)}
 \frametitle{Vectors}
 
 A type of collection in Clojure.
-Accessing items by index is $O(log n)$.
+Accessing items by index is $O(\log n)$.
 	\begin{verbatim}
 	(get [1 2 3 4 5] 3)	
 	=> 4
@@ -267,11 +270,19 @@ Every time the tests were run, the first run was discarded due to Java Virtual M
 \frametitle{Sum-Primes Results}
 \begin{table}
 \begin{center}
+
+\hspace*{-0.2in}  %%%%%%% to move the table left
 \begin{tabular}{|l|c|c|c|c|c|c|}
 \hline
-Machine & red + map & red + pmap & r/fold + pmap & r/fold + map & r/fold & r/fold + r/map \\
+Run & \multirow{2}{1.5cm}{reduce, \\ map} 
+&  \multirow{2}{1.5cm}{reduce, \\ pmap} 
+&  \multirow{2}{1.3cm}{r/fold,  \\ pmap} 
+&   \multirow{2}{1.3cm}{r/fold, \\  map} 
+& r/fold& \multirow{2}{1.3cm}{r/fold, \\  r/map}\\
+& & & & &  & %%%% to force vertical lines in the second row
+\\
 \hline
-Box 1 & 208.0 & 66.4 & 61.7 & 207.0 & 57.2 &  54.6 \\
+Box 1 & \slow{208.0} & \fast{66.4} & 61.7 & 207.0 & 57.2 &  54.6 \\
 Box 2 & 279.3 & 250.6 & 284.3 & 280.8 & 132.0 & 131.0 \\
 Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \hline
@@ -287,7 +298,14 @@ Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|}
 \hline
-Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + map & r/fold\\
+Run & \multirow{2}{1.5cm}{reduce, \\ map} 
+&  \multirow{2}{1.5cm}{reduce, \\ pmap} 
+&  \multirow{2}{1.3cm}{r/fold,  \\ pmap} 
+&   \multirow{2}{1.3cm}{r/fold, \\  map} 
+& r/fold
+\\
+& & & & &   %%%% to force vertical lines in the second row
+\\
 \hline
 Box 1 & 2084.6 & 604.5 & 597.1 & 2065.7 & 535.8\\
 Box 2 & 2802.8 & 2567.7 & 2585.6 & 2774.0 & 1269 \\
@@ -306,7 +324,14 @@ Box 3 & 2662.2 & 2411.3 & 2426.6 & 2647.9 & 557.6\\
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|}
 \hline
-Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + r/map & r/fold\\
+Run & \multirow{2}{1.5cm}{reduce, \\ map} 
+&  \multirow{2}{1.5cm}{reduce, \\ pmap} 
+&  \multirow{2}{1.3cm}{r/fold,  \\ pmap} 
+&   \multirow{2}{1.3cm}{r/fold, \\  map} 
+& r/fold
+\\
+& & & & &   %%%% to force vertical lines in the second row
+\\
 \hline
 Box 1 & 115.4 & 128.7 & 109.7 & 28.6 & 30.5\\
 Box 2 & 120.1 & 401.3 & 414.0 & 60.0 & 58.0 \\
