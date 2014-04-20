@@ -41,28 +41,29 @@ April 25, 2014\par
 Henry Fellows, Joe Einertson, and Elena Machkasova\par
 }
 \end{frame}
-
-\frame{\frametitle{Table of contents}\tableofcontents[currentsection]} 
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Introduction}
-\end{frame}
+	\begin{itemize}
+	\item Focus on testing methods of parallel processing in Clojure.
+	\item Comes from an interest in developing parallel algorithms.
+	\end{itemize}
 
-\begin{frame}[fragile]
-\frametitle{Overview}
 \end{frame}
-
+%frame
+\frame{\frametitle{Table of contents}\tableofcontents[currentsection] I don't know why this doesn't work.} 
+%frame
 \begin{frame}[fragile]
 \frametitle{Intro to Clojure}
 	\begin{itemize}
   	 \item Clojure is a dialect of Lisp
+	\item Runs on the Java Virtual Machine (JVM)
   	 \item First introduced in 2007 by Rich Hickey
   	 \item Immutable data structures
 	 \item Built-in support for concurrency.
-	 \item Runs on the Java Virtual Machine (JVM)
-	\end{itemize}
+	 	\end{itemize}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Functional Languages}
 	\begin{itemize}
@@ -71,7 +72,7 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
   	 \item Functional languages avoid direct memory manipulation
        \end{itemize}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Polish Prefix Notation}
 Can be generalized to \clocode{(function arg1 ... argN)}.
@@ -86,47 +87,49 @@ Basic function syntax: \clocode{(defn name [args] expr)}
 	=> 4
 	\end{verbatim}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Vectors}
-A type of collection in Clojure
+
+A type of collection in Clojure.
+Accessing items by index is $O(log n)$.
 	\begin{verbatim}
 	(get [1 2 3 4 5] 3)	
 	=> 4
 	\end{verbatim}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{High Order Functions}
 %\hfcomment{mention code-as-data}
- Functions can take functions as arguments
+ Functions can take functions as arguments.
 	\begin{verbatim}
 	 (map add1 [0 1 2 3 4])
 	 =>(1 2 3 4 5)
 	\end{verbatim}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Reduce}
-Also known as fold in other Lisps
+Also known as fold in other Lisps.
 	\begin{verbatim}
 	 (reduce + [1 2 3])
 	 => 6
 	\end{verbatim}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Lazy Evaluation}
 	\begin{itemize}
 	  \item Delaying evaluation until the value is needed.
-  	  \item infinite sequences - so long as it is not all called.
+  	  \item Infinite sequences - so long as it is not all called.
        \end{itemize}	
 	\begin{verbatim}
 	 (take 10 (range))
 	 => (0 1 2 3 4 5 6 7 8 9)
 	\end{verbatim}
 \end{frame}
-
+%frame
 \begin{frame}
 \frametitle{Concurrency}
 	\begin{itemize}
@@ -134,9 +137,10 @@ Also known as fold in other Lisps
 	 \item Concurrency is the execution of multiple computations simultaneously.
 	 \item Programming concurrent programs is \textit{hard}.
 	 \item Deadlocking: two tasks are waiting for resources that the other task holds.
+	 \item Immutable data structures make concurrency easier.
 	\end{itemize}	
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
 \frametitle{Pmap}
 	\begin{itemize}
@@ -146,29 +150,201 @@ Also known as fold in other Lisps
 	 \item \clocode{doall} forces eager evaluation. 
 	\end{itemize}	
 	\begin{verbatim}
-	(pmap add1 [0 1 2 3 4])
+	(doall (pmap add1 [0 1 2 3 4]))
 	=> (1 2 3 4 5)
 	\end{verbatim}
 \end{frame}
-
+%frame
 \begin{frame}[fragile]
-\frametitle{Reducers I}
+\frametitle{Reducers}
 	\begin{itemize}
 	 \item Released by Rich Hickey in May 2012.
-	 \item Reducers provides parallel higher-order functions.
-	 \item Mostly drop-in replacements.
 	 \item Built on Java's fork/join framework.
-	\end{itemize}	
+	 \item Reducers provides parallel higher-order functions, with the same names as their serial counterparts
+	 \item Mostly drop-in replacements.
+	\end{itemize}
 \end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Reducers II}
+%frame
+\begin{frame}
+\frametitle{Test Structure}
 	\begin{itemize}
-	 \item The names of reducers functions are the same as their serial counterparts
-	 \item Except reduce, which gets called \clocode{fold}
-	\end{itemize}	
-	In our code, and in this presentation, we use the prefix \clocode{r/} to differentiate between the core versions and the reducers versions.
-	
+	\item Computationally expensive operations on large sets of integers
+	\item \clocode{r/fold} and \clocode{r/map} are reducers functions
+	\end{itemize}
+	Three major tests:
+	\begin{itemize}
+	\item Compare-count-primes
+	\item Compare-sum-primes
+	\item Compare-sum-sqrt
+	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Test Sub-Structure}
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline 
+Name & Description \\
+\hline
+map + reduce & serial map, serial reduce \\
+pmap + reduce & parallel map, serial reduce \\
+map + r/fold & serial map, parallel reduce \\
+pmap + r/fold & parallel map, parallel reduce\\
+r/map + r/fold & reducers parallel map, parallel reduce\\
+r/fold & parallel reduce\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Configurations for our tests}\label{table:tests}
+\end{table}
+The \clocode{r/fold} configuration does not have a mapping phase: the test code was rewritten to make it work with a single reduce.
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Fermat Primality Test}
+Two of the tests focus on prime testing;
+	\begin{itemize}
+	\item  Probabilistic algorithm called the \emph{Fermat primality test}.
+	\item Two parameters: a number to test, and the number of trials to run.
+	\item The more trials, the more accurate the result.
+	\item We run it with five trials, and numbers on the order of one billion.
+	\item \emph{Chosen because it is computationally expensive.}
+	\end{itemize}
 \end{frame}
 
-\end{document}
+\begin{frame}
+\frametitle{Compare-count-primes}
+	\begin{itemize}
+	\item Counts number of primes in the given collection.
+	\item Collection is 100,000 random integers uniformly distributed between 0 and 1 billion.
+	\item repeated 100 times, with new data each time. 
+	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Compare-sum-primes}
+	\begin{itemize}
+	\item Sums the values of all primes in the given collection.
+	\item Collection is 10,000 random integers uniformly distributed between 0 and 1 billion.
+	\item repeated 1000 times, with new data each time. 
+	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Compare-sum-sqrt}
+	\begin{itemize}
+	\item Sums the integer square root of each value in the given collection.
+	\item Like prime testing, integer square root is computationally difficult and a good 'real world' example.
+	\item Collection is 10,000 random integers uniformly distributed between 0 and 1 billion.
+	\item repeated 1000 times, with new data each time. 
+	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Test Enviroments}
+\begin{itemize}
+ \item Box 1 has an Intel i7 (4700MQ) CPU, with 4 hyper-threaded cores, running Windows 7.
+ \item Box 2 has an Intel i5 (650) CPU, with 4 cores, running Fedora 18.
+ \item Box 3 has an AMD FX-8350 CPU, with 8 cores, running Fedora 18. 
+\end{itemize}
+Every time the tests were run, the first run was discarded due to Java Virtual Machine warmup.
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Sum-Primes Results}
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+Machine & red + map & red + pmap & r/fold + pmap & r/fold + map & r/fold & r/fold + r/map \\
+\hline
+Box 1 & 208.0 & 66.4 & 61.7 & 207.0 & 57.2 &  54.6 \\
+Box 2 & 279.3 & 250.6 & 284.3 & 280.8 & 132.0 & 131.0 \\
+Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Sum-Primes averages (ms).}\label{table:sum-primes}
+\end{table}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Count-Primes Results}
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + map & r/fold\\
+\hline
+Box 1 & 2084.6 & 604.5 & 597.1 & 2065.7 & 535.8\\
+Box 2 & 2802.8 & 2567.7 & 2585.6 & 2774.0 & 1269 \\
+Box 3 & 2662.2 & 2411.3 & 2426.6 & 2647.9 & 557.6\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Count-Primes averages (ms).}\label{table:count-primes}
+\end{table}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Sum-Sqrt Results}
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+Machine & reduce + map & reduce + pmap & r/fold + pmap & r/fold + r/map & r/fold\\
+\hline
+Box 1 & 115.4 & 128.7 & 109.7 & 28.6 & 30.5\\
+Box 2 & 120.1 & 401.3 & 414.0 & 60.0 & 58.0 \\
+Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Sum-Sqrt averages (ms).}\label{table:sum-sqrt}
+\end{table}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Pmap and Thread Thrashing}
+	Pmap is basically bad.
+	\begin{itemize}
+	\item Running times ranging from close to the best parallel runs.
+	\item To worse than serial methods.
+	\item Up to 244\% slower than serial methods!
+	\end{itemize}
+Pmap creates too many threads.
+	\begin{itemize}
+	\item This causes \emph{thread thrashing}.
+	\item The number of treads leads to excessive context switching.
+	\item Causing the process to choke on its own overhead.
+	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Conclusion}
+	\begin{itemize}
+	\item Reducers is \emph{fast}, running 15\% faster than pmap, when pmap was working.
+	\item \clocode{r/fold} + \clocode{r/map}, run as fast as the one step \clocode{r/fold}.
+	\item Reducers and Pmap do not work well together.
+	\item Both reducers and \clocode{pmap} show machine-specific behaviors.
+	\item Due to differing micro-architectures?
+	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{End.}
+	There's a lot to look into;
+	\begin{itemize}
+	\item Thread balancing in reducers.
+	\item Optimal thread management.
+	\item The effects of CPU architecture on thread thrashing.
+	\end{itemize}
+We still want to continue on our main interest, parallel algorithm development in functional languages.
+\break
+
+The authors thank Jon Anthony for helpful discussions and methodology suggestions. 
+\end{frame}
+
+\end{document} 
