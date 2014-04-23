@@ -29,8 +29,8 @@
 \newcommand{\hfcomment}[1]{\textcolor{Teal}{\comment{Henry: {#1}}}}
 \newcommand{\todo}[1]{\textcolor{blue}{\comment{To Do: {#1}}}}
 \newcommand{\clocode}[1]{{\texttt {#1}}}
-\newcommand{\fast}[1]{\textcolor{ForestGreen}{#1}}
-\newcommand{\slow}[1]{\textcolor{magenta}{#1}}
+\newcommand{\fast}[1]{\textcolor{green}{#1}}
+\newcommand{\slow}[1]{\textcolor{red}{#1}}
 
 \begin{document}
 \title{Exploration of parallelization efficiency in the Clojure programming language}
@@ -49,11 +49,12 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
 
 \begin{frame}[fragile]
 \frametitle{Introduction}
+	Our project is a comparison of parallelism methods in the Clojure programming language.
 	\begin{itemize}
-	\item Focus on testing methods of parallel processing in Clojure.
-	\item Comes from an interest in developing parallel algorithms.
+	\item Interest in using clojure as an educational tool.
+	\item Using concurrency in functional language.
+	\item Developing concurrent algorithms.
 	\end{itemize}
-
 \end{frame}
 %frame
 
@@ -69,20 +70,31 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
 \frametitle{Intro to Clojure}
 	\begin{itemize}
   	 \item Clojure is a dialect of Lisp
-	\item Runs on the Java Virtual Machine (JVM)
+	 \item Runs on the Java Virtual Machine (JVM)
   	 \item First introduced in 2007 by Rich Hickey
   	 \item Immutable data structures
 	 \item Built-in support for concurrency.
-	 	\end{itemize}
+	 \end{itemize}
 \end{frame}
 %frame
 \begin{frame}[fragile]
-\frametitle{Functional Languages}
+\frametitle{Functional Languages and Lisps}
+	Functional Languages
 	\begin{itemize}
-	 \item Clojure is a functional language
-  	 \item Treat computation as the evaluation of functions
-  	 \item Functional languages avoid direct memory manipulation
+	 \item Clojure is a functional language.
+  	 \item Treat computation as the evaluation of functions.
+  	 \item Functional languages avoid direct memory manipulation.
        \end{itemize}
+	Lisp is a programming language
+	\begin{itemize}
+	\item also a family of programming languages
+	\item \begin{itemize}
+		 \item Common Lisp
+		 \item Scheme
+		 \item Racket
+		\end{itemize}
+	\item Common, distinctive, syntax.
+	\end{itemize}
 \end{frame}
 %frame
 \begin{frame}[fragile]
@@ -150,7 +162,7 @@ Also known as fold in other Lisps.
 	\begin{itemize}
 	 \item Most processors are now being built with multiple cores.
 	 \item Concurrency is the execution of multiple computations simultaneously.
-	 \item Programming concurrent programs is \textit{hard}.
+	 \item Programming concurrent programs is \textit{considered hard}.
 	 \item Deadlocking: two tasks are waiting for resources that the other task holds.
 	 \item Immutable data structures make concurrency easier.
 	\end{itemize}	
@@ -259,11 +271,9 @@ Two of the tests focus on prime testing;
 \begin{frame}
 \frametitle{Test Enviroments}
 \begin{itemize}
- \item Box 1 has an Intel i7 (4700MQ) CPU, with 4 hyper-threaded cores, running Windows 7.
- \item Box 2 has an Intel i5 (650) CPU, with 4 cores, running Fedora 18.
- \item Box 3 has an AMD FX-8350 CPU, with 8 cores, running Fedora 18. 
-\end{itemize}
-Every time the tests were run, the first run was discarded due to Java Virtual Machine warmup.
+ \item an Intel i7 CPU, with 4 cores.
+ \item an Intel i5 CPU, with 2 cores.
+ \item an AMD FX-8350 CPU, with 8 cores.
 \end{frame}
 %frame
 \begin{frame}
@@ -282,9 +292,9 @@ Run & \multirow{2}{1.5cm}{reduce, \\ map}
 & & & & &  & %%%% to force vertical lines in the second row
 \\
 \hline
-Box 1 & \slow{208.0} & \fast{66.4} & 61.7 & 207.0 & 57.2 &  54.6 \\
-Box 2 & 279.3 & 250.6 & 284.3 & 280.8 & 132.0 & 131.0 \\
-Box 3 & 266.9 & 225.1 & 248.4 & 275.5 & 59.2 & 63.6 \\
+i7 & 208.0 & \fast{66.4} & \fast{61.7} & 207.0 & \fast{57.2} &  \fast{54.6} \\
+i5 & 279.3 & 250.6 & 284.3 & 280.8 & \fast{132.0} & \fast{131.0} \\
+AMD & 266.9 & 225.1 & 248.4 & 275.5 & \fast{59.2} & \fast{63.6} \\
 \hline
 \end{tabular}
 \end{center}
@@ -307,9 +317,9 @@ Run & \multirow{2}{1.5cm}{reduce, \\ map}
 & & & & &   %%%% to force vertical lines in the second row
 \\
 \hline
-Box 1 & 2084.6 & 604.5 & 597.1 & 2065.7 & 535.8\\
-Box 2 & 2802.8 & 2567.7 & 2585.6 & 2774.0 & 1269 \\
-Box 3 & 2662.2 & 2411.3 & 2426.6 & 2647.9 & 557.6\\
+i7  & 2084.6 & \fast{604.5} & \fast{597.1} & 2065.7 & \fast{535.8}\\
+i5 & 2802.8 & 2567.7 & 2585.6 & 2774.0 & \fast{1269} \\
+AMD & 2662.2 & 2411.3 & 2426.6 & 2647.9 & \fast{557.6}\\
 \hline
 \end{tabular}
 \end{center}
@@ -333,9 +343,9 @@ Run & \multirow{2}{1.5cm}{reduce, \\ map}
 & & & & &   %%%% to force vertical lines in the second row
 \\
 \hline
-Box 1 & 115.4 & 128.7 & 109.7 & 28.6 & 30.5\\
-Box 2 & 120.1 & 401.3 & 414.0 & 60.0 & 58.0 \\
-Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
+i7 & 115.4 & 128.7 & 109.7 & \fast{28.6} & \fast{30.5}\\
+i5 & 120.1 & \slow{401.3} & \slow{414.0} & \fast{60.0} & \fast{58.0} \\
+AMD & 115.9 & \slow{359.5} & \slow{367.6} & \fast{32.8} & \fast{32.4}\\
 \hline
 \end{tabular}
 \end{center}
@@ -343,9 +353,10 @@ Box 3 & 115.9 & 359.5 & 367.6 & 32.8 & 32.4\\
 \end{table}
 \end{frame}
 %frame
+\section{Conclusion}
 \begin{frame}
 \frametitle{Pmap and Thread Thrashing}
-	Pmap is basically bad.
+	Pmap is unreliable.
 	\begin{itemize}
 	\item Running times ranging from close to the best parallel runs.
 	\item To worse than serial methods.
@@ -360,14 +371,34 @@ Pmap creates too many threads.
 \end{frame}
 %frame
 \begin{frame}
-\frametitle{Conclusion}
+\frametitle{Reducers}
 	\begin{itemize}
 	\item Reducers is \emph{fast}, running 15\% faster than pmap, when pmap was working.
 	\item \clocode{r/fold} + \clocode{r/map}, run as fast as the one step \clocode{r/fold}.
-	\item Reducers and Pmap do not work well together.
-	\item Both reducers and \clocode{pmap} show machine-specific behaviors.
-	\item Due to differing micro-architectures?
+	\item Relatively reliable.
 	\end{itemize}
+\end{frame}
+%frame
+\begin{frame}
+\frametitle{Environments}
+Intel i7 
+	\begin{itemize}
+	\item 'Fastest' machine tested
+	\item Resistant to thread thrashing.
+	\item Caused by hyper-threading?
+	\end{itemize}
+Intel i5
+	\begin{itemize}
+	\item 'slowest' machine tested
+	\item not resistant to thread thrashing.
+	\end{itemize}
+AMD Fx-8350
+	\begin{itemize}
+	\item Slightly resistant to thread thrashing.
+	\item Does not scale as well.
+	\item Due to micro-architecture?
+	\end{itemize}
+	
 \end{frame}
 %frame
 \begin{frame}
