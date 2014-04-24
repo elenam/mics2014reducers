@@ -46,15 +46,21 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
 \end{frame}
 %frame
 
-
 \begin{frame}[fragile]
 \frametitle{Introduction}
 	Our project is a comparison of parallelism methods in the Clojure programming language.
 	\begin{itemize}
-	\item Interest in using clojure as an educational tool.
+	\item Relatively new language.
+	\item Designed for efficent parallel operations.
+	\item Recently added new parallel library.
+	\end{itemize}
+	Motivations.
+	\begin{itemize}
+	\item Interest in using Clojure as an educational tool.
 	\item Using concurrency in functional language.
 	\item Developing concurrent algorithms.
 	\end{itemize}
+	
 \end{frame}
 %frame
 
@@ -62,21 +68,21 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
 \frametitle{Table of contents}
 \tableofcontents %[currentsection] I don't know why this doesn't work.} 
 \end{frame}
-
+%frame
 \section{Overview of Clojure}
 
-%frame
 \begin{frame}[fragile]
 \frametitle{Intro to Clojure}
 	\begin{itemize}
-  	 \item Clojure is a dialect of Lisp
-	 \item Runs on the Java Virtual Machine (JVM)
-  	 \item First introduced in 2007 by Rich Hickey
-  	 \item Immutable data structures
-	 \item Built-in support for concurrency.
+  	 \item Clojure is a dialect of Lisp.
+	 \item Runs on the Java Virtual Machine (JVM).
+  	 \item First introduced in 2007 by Rich Hickey.
+  	 \item Immutable data structures.
+	 \item Built-in support for parallelism.
 	 \end{itemize}
 \end{frame}
 %frame
+
 \begin{frame}[fragile]
 \frametitle{Functional Languages and Lisps}
 	Functional Languages
@@ -85,20 +91,18 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
   	 \item Treat computation as the evaluation of functions.
   	 \item Functional languages avoid direct memory manipulation.
        \end{itemize}
-	Lisp is a programming language
-	\begin{itemize}
-	\item also a family of programming languages
-	\item \begin{itemize}
+	Lisp of a family of programming languages 
+		\begin{itemize}
+		 \item Lisp-1 
 		 \item Common Lisp
 		 \item Scheme
 		 \item Racket
+		 \item Clojure
 		\end{itemize}
-	\item Common, distinctive, syntax.
-	\end{itemize}
 \end{frame}
 %frame
 \begin{frame}[fragile]
-\frametitle{Polish Prefix Notation}
+\frametitle{Prefix Notation}
 Can be generalized to \clocode{(function arg1 ... argN)}.
 	\begin{verbatim}
 	(+ 2 3)
@@ -112,14 +116,14 @@ Basic function syntax: \clocode{(defn name [args] expr)}
 	\end{verbatim}
 \end{frame}
 %frame
+
 \begin{frame}[fragile]
 \frametitle{Vectors}
-
 A type of collection in Clojure.
 Accessing items by index is $O(\log n)$.
 	\begin{verbatim}
-	(get [1 2 3 4 5] 3)	
-	=> 4
+	(get [2 7 4 9 5] 3)	
+	=> 9
 	\end{verbatim}
 \end{frame}
 %frame
@@ -128,33 +132,33 @@ Accessing items by index is $O(\log n)$.
 %\hfcomment{mention code-as-data}
  Functions can take functions as arguments.
 	\begin{verbatim}
-	 (map add1 [0 1 2 3 4])
-	 =>(1 2 3 4 5)
+	(map add1 [0 1 2 3 4])
+	 => [1 2 3 4 5]
 	\end{verbatim}
-\end{frame}
-%frame
-\begin{frame}[fragile]
-\frametitle{Reduce}
-Also known as fold in other Lisps.
+Another high order function, \clocode{reduce}.
 	\begin{verbatim}
-	 (reduce + [1 2 3])
+	(reduce + [1 2 3])
 	 => 6
 	\end{verbatim}
-\end{frame}
-%frame
-\begin{frame}[fragile]
-\frametitle{Lazy Evaluation}
-	\begin{itemize}
-	  \item Delaying evaluation until the value is needed.
-  	  \item Infinite sequences - so long as it is not all called.
-       \end{itemize}	
+The combination of \clocode{reduce} and \clocode{map}.
 	\begin{verbatim}
-	 (take 10 (range))
-	 => (0 1 2 3 4 5 6 7 8 9)
+	(reduce + (map sqrt [1 4 25]))
+	 => 8
 	\end{verbatim}
 \end{frame}
 %frame
-
+%\begin{frame}[fragile]
+%\frametitle{Lazy Evaluation}
+%	\begin{itemize}
+%	  \item Delaying evaluation until the value is needed.
+%  	  \item Infinite sequences - so long as it is not all called.
+%       \end{itemize}	
+%	\begin{verbatim}
+%	 (take 10 (range))
+%	 => (0 1 2 3 4 5 6 7 8 9)
+%	\end{verbatim}
+%\end{frame}
+%frame
 \section{Clojure Concurrency}
 
 \begin{frame}
@@ -168,17 +172,25 @@ Also known as fold in other Lisps.
 	\end{itemize}	
 \end{frame}
 %frame
+\begin{frame}
+\frametitle{Parallel Computation in Clojure}
+	Clojure has several methods of parallelism.
+	\begin{itemize}
+	\item \clocode{pmap} is one of the early methods of parallelism in Clojure.
+	\item Reducers is a new library introduced in 2012.
+	\end{itemize}
+\end{frame}
+%frame
 \begin{frame}[fragile]
 \frametitle{Pmap}
 	\begin{itemize}
-	 \item A parallel version of \clocode{map}
+	 \item A parallel version of \clocode{map}.
 	 \item Has the same syntax as \clocode{map}.
-	 \item \clocode{pmap} is lazy.
-	 \item \clocode{doall} forces eager evaluation. 
+	 \item On a sufficiently large collection, it will create additional threads.
 	\end{itemize}	
-	\begin{verbatim}
-	(doall (pmap add1 [0 1 2 3 4]))
-	=> (1 2 3 4 5)
+	\begin{verbatim} 
+	(pmap add1 [0 1 2 3 4])
+	=> [1 2 3 4 5]
 	\end{verbatim}
 \end{frame}
 %frame
@@ -187,25 +199,49 @@ Also known as fold in other Lisps.
 	\begin{itemize}
 	 \item Released by Rich Hickey in May 2012.
 	 \item Built on Java's fork/join framework.
-	 \item Reducers provides parallel higher-order functions, with the same names as their serial counterparts
-	 \item Mostly drop-in replacements.
+	 \item Reducers provides parallel higher-order functions, with the same names as their serial counterparts.
+	 \item \clocode{r/fold} is used in place of reduce.
 	\end{itemize}
 \end{frame}
 %frame
-\begin{frame}
+\begin{frame}[fragile]
+\frametitle{Implementation of Reducers}
+	\begin{itemize}
+	\item All collections come with a traversal mechanism.
+	\item All reducers functions (\clocode{r/map, r/filter}) except \clocode{r/fold} provide a recipe.
+	\item \clocode{r/fold} causes the evaluation of all recipes attached to a collection in parallel.
+	\item Fork/Join framework creates one thread per core (as reported by OS).
+	\end{itemize}
+	\begin{verbatim}
+	(r/fold + (r/map sqrt [1 4 25]))
+	 => 8
+	\end{verbatim}
+\end{frame}
+%frame
+\begin{frame}[fragile]
 \frametitle{Test Structure}
 	\begin{itemize}
 	\item Computationally expensive operations on large sets of integers
-	\item \clocode{r/fold} and \clocode{r/map} are reducers functions
+	
 	\end{itemize}
-	Three major tests:
+	Three tests:
 	\begin{itemize}
-	\item Compare-count-primes
-	\item Compare-sum-primes
-	\item Compare-sum-sqrt
+	\item Count-primes
+	\begin{verbatim}
+	(reduce + (map (one-if-prime-else-zero [...])))
+	\end{verbatim}
+	\item Sum-primes
+	\begin{verbatim}
+	(reduce + (map (zero-if-composite-else-n [...])))
+	\end{verbatim}
+	\item Sum-sqrt
+	\begin{verbatim}
+	(reduce + (map (sqrt [...])))
+	\end{verbatim}
 	\end{itemize}
 \end{frame}
-%frame
+%frame 
+
 \begin{frame}
 \frametitle{Test Sub-Structure}
 \begin{table}
@@ -241,23 +277,21 @@ Two of the tests focus on prime testing;
 \end{frame}
 
 \begin{frame}
-\frametitle{Compare-count-primes}
+\frametitle{Primes Tests}
 	\begin{itemize}
 	\item Counts number of primes in the given collection.
-	\item Collection is 100,000 random integers uniformly distributed between 0 and 1 billion.
+	\item Collection is 100,000 random integers between 0 and 1 billion.
 	\item repeated 100 times, with new data each time. 
 	\end{itemize}
-\end{frame}
-%frame
-\begin{frame}
-\frametitle{Compare-sum-primes}
+Compare-sum-primes
 	\begin{itemize}
 	\item Sums the values of all primes in the given collection.
-	\item Collection is 10,000 random integers uniformly distributed between 0 and 1 billion.
+	\item Collection is 10,000 random integers  between 0 and 1 billion.
 	\item repeated 1000 times, with new data each time. 
 	\end{itemize}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Compare-sum-sqrt}
 	\begin{itemize}
@@ -268,19 +302,21 @@ Two of the tests focus on prime testing;
 	\end{itemize}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Test Enviroments}
 \begin{itemize}
  \item an Intel i7 CPU, with 4 cores.
  \item an Intel i5 CPU, with 2 cores.
  \item an AMD FX-8350 CPU, with 8 cores.
+\end{itemize}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Sum-Primes Results}
 \begin{table}
 \begin{center}
-
 \hspace*{-0.2in}  %%%%%%% to move the table left
 \begin{tabular}{|l|c|c|c|c|c|c|}
 \hline
@@ -302,6 +338,7 @@ AMD & 266.9 & 225.1 & 248.4 & 275.5 & \fast{59.2} & \fast{63.6} \\
 \end{table}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Count-Primes Results}
 \begin{table}[h!]
@@ -327,6 +364,7 @@ AMD & 2662.2 & 2411.3 & 2426.6 & 2647.9 & \fast{557.6}\\
 \end{table}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Sum-Sqrt Results}
 
@@ -353,6 +391,7 @@ AMD & 115.9 & \slow{359.5} & \slow{367.6} & \fast{32.8} & \fast{32.4}\\
 \end{table}
 \end{frame}
 %frame
+
 \section{Conclusion}
 \begin{frame}
 \frametitle{Pmap and Thread Thrashing}
@@ -370,6 +409,7 @@ Pmap creates too many threads.
 	\end{itemize}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Reducers}
 	\begin{itemize}
@@ -379,6 +419,7 @@ Pmap creates too many threads.
 	\end{itemize}
 \end{frame}
 %frame
+
 \begin{frame}
 \frametitle{Environments}
 Intel i7 
@@ -401,8 +442,9 @@ AMD Fx-8350
 	
 \end{frame}
 %frame
+
 \begin{frame}
-\frametitle{End.}
+\frametitle{Conclusion}
 	There's a lot to look into;
 	\begin{itemize}
 	\item Thread balancing in reducers.
@@ -411,7 +453,6 @@ AMD Fx-8350
 	\end{itemize}
 We still want to continue on our main interest, parallel algorithm development in functional languages.
 \break
-
 The authors thank Jon Anthony for helpful discussions and methodology suggestions. 
 \end{frame}
 
