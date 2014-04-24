@@ -264,43 +264,47 @@ r/fold & parallel reduce\\
 The \clocode{r/fold} configuration does not have a mapping phase: the test code was rewritten to make it work with a single reduce.
 \end{frame}
 %frame
-\begin{frame}
-\frametitle{Fermat Primality Test}
-Two of the tests focus on prime testing;
-	\begin{itemize}
-	\item  Probabilistic algorithm called the \emph{Fermat primality test}.
-	\item Two parameters: a number to test, and the number of trials to run.
-	\item The more trials, the more accurate the result.
-	\item We run it with five trials, and numbers on the order of one billion.
-	\item \emph{Chosen because it is computationally expensive.}
-	\end{itemize}
-\end{frame}
+%\begin{frame}
+%\frametitle{Fermat Primality Test}
+%Two of the tests focus on prime testing;
+%	\begin{itemize}
+%	\item  Probabilistic algorithm called the \emph{Fermat primality test}.
+%	\item Two parameters: a number to test, and the number of trials to run.
+%	\item The more trials, the more accurate the result.
+%	\item We run it with five trials, and numbers on the order of one billion.
+%	\item \emph{Chosen because it is computationally expensive.}
+%	\end{itemize}
+%\end{frame}
 
 \begin{frame}
-\frametitle{Primes Tests}
+\frametitle{Data Sets}
+Count-primes
 	\begin{itemize}
-	\item Counts number of primes in the given collection.
 	\item Collection is 100,000 random integers between 0 and 1 billion.
 	\item repeated 100 times, with new data each time. 
 	\end{itemize}
-Compare-sum-primes
+Sum-primes
 	\begin{itemize}
-	\item Sums the values of all primes in the given collection.
+	\item Collection is 10,000 random integers  between 0 and 1 billion.
+	\item repeated 1000 times, with new data each time. 
+	\end{itemize}
+Sum-sqrt
+	\begin{itemize}
 	\item Collection is 10,000 random integers  between 0 and 1 billion.
 	\item repeated 1000 times, with new data each time. 
 	\end{itemize}
 \end{frame}
 %frame
 
-\begin{frame}
-\frametitle{Compare-sum-sqrt}
-	\begin{itemize}
-	\item Sums the integer square root of each value in the given collection.
-	\item Like prime testing, integer square root is computationally difficult and a good 'real world' example.
-	\item Collection is 10,000 random integers uniformly distributed between 0 and 1 billion.
-	\item repeated 1000 times, with new data each time. 
-	\end{itemize}
-\end{frame}
+%\begin{frame}
+%\frametitle{Compare-sum-sqrt}
+%	\begin{itemize}
+%	\item Sums the integer square root of each value in the given collection.
+%	\item Like prime testing, integer square root is computationally difficult and a good 'real world' example.
+%	\item Collection is 10,000 random integers uniformly distributed between 0 and 1 billion.
+%	\item repeated 1000 times, with new data each time. 
+%	\end{itemize}
+%\end{frame}
 %frame
 
 \begin{frame}
@@ -397,9 +401,8 @@ AMD & 115.9 & \slow{359.5} & \slow{367.6} & \fast{32.8} & \fast{32.4}\\
 \frametitle{Pmap and Thread Thrashing}
 	Pmap is unreliable.
 	\begin{itemize}
-	\item Running times ranging from close to the best parallel runs.
-	\item To worse than serial methods.
-	\item Up to 244\% slower than serial methods!
+	\item Running times ranging from close to the best parallel runs, to worse than serial.
+	\item Close to 2.5 times slower than serial methods.
 	\end{itemize}
 Pmap creates too many threads.
 	\begin{itemize}
@@ -413,8 +416,8 @@ Pmap creates too many threads.
 \begin{frame}
 \frametitle{Reducers}
 	\begin{itemize}
-	\item Reducers is \emph{fast}, running 15\% faster than pmap, when pmap was working.
-	\item \clocode{r/fold} + \clocode{r/map}, run as fast as the one step \clocode{r/fold}.
+	\item Reducers is \emph{fast}, running 15\% faster than pmap, when pmap was working well.
+	\item \clocode{r/fold} + \clocode{r/map}, runs as fast as the one step \clocode{r/fold}.
 	\item Relatively reliable.
 	\end{itemize}
 \end{frame}
@@ -424,14 +427,13 @@ Pmap creates too many threads.
 \frametitle{Environments}
 Intel i7 
 	\begin{itemize}
-	\item 'Fastest' machine tested
 	\item Resistant to thread thrashing.
 	\item Caused by hyper-threading?
 	\end{itemize}
 Intel i5
 	\begin{itemize}
-	\item 'slowest' machine tested
-	\item not resistant to thread thrashing.
+	\item Slowest machine tested
+	\item Not resistant to thread thrashing.
 	\end{itemize}
 AMD Fx-8350
 	\begin{itemize}
@@ -452,7 +454,7 @@ AMD Fx-8350
 	\item The effects of CPU architecture on thread thrashing.
 	\end{itemize}
 We still want to continue on our main interest, parallel algorithm development in functional languages.
-\break
+\par
 The authors thank Jon Anthony for helpful discussions and methodology suggestions. 
 \end{frame}
 
