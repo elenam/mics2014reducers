@@ -93,11 +93,11 @@ Henry Fellows, Joe Einertson, and Elena Machkasova\par
        \end{itemize}
 	Lisp of a family of programming languages 
 		\begin{itemize}
-		 \item Lisp-1 
-		 \item Common Lisp
-		 \item Scheme
-		 \item Racket
-		 \item Clojure
+		 \item Lisp-1 (1958)
+
+		 \item Common Lisp (1984)
+		 \item Racket (1994)
+		 \item Clojure	(2007)
 		\end{itemize}
 \end{frame}
 %frame
@@ -222,7 +222,6 @@ The combination of \clocode{reduce} and \clocode{map}.
 \frametitle{Test Structure}
 	\begin{itemize}
 	\item Computationally expensive operations on large sets of integers
-	
 	\end{itemize}
 	Three tests:
 	\begin{itemize}
@@ -241,9 +240,28 @@ The combination of \clocode{reduce} and \clocode{map}.
 	\end{itemize}
 \end{frame}
 %frame 
-
+\begin{frame}[fragile]
+\frametitle{Test Structure, Continued}
+	Standard version:
+	\begin{verbatim}
+	(reduce + (map (sqrt [...])))
+	\end{verbatim}
+	Version with pmap:
+	\begin{verbatim}
+	(reduce + (pmap (sqrt [...])))
+	\end{verbatim}
+	Version with r/fold:
+	\begin{verbatim}
+	(r/fold + (map (sqrt [...])))
+	\end{verbatim}
+	Version with r/fold and r/map:
+	\begin{verbatim}
+	(r/fold + (r/map (sqrt [...])))
+	\end{verbatim}
+\end{frame}
+%frame
 \begin{frame}
-\frametitle{Test Sub-Structure}
+\frametitle{Test sub-Structure}
 \begin{table}
 \begin{center}
 \begin{tabular}{|l|l|}
