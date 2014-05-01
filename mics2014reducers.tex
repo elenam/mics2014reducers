@@ -403,7 +403,7 @@ This test used a collection of 100,000 random integers uniformly distributed bet
  \item 
  Box 1 has an Intel i7 (4700MQ) CPU, with 4 hyper-threaded cores, running Windows 7.
  \item
- Box 2 has an Intel i5 (650) CPU, with 4 cores, running Fedora 18.
+ Box 2 has an Intel i5 (650) CPU, with 2 hyper-threaded cores, running Fedora 18.
  \item
  Box 3 has an AMD FX-8350 CPU, with 8 cores, running Fedora 18. 
  \end{itemize}
@@ -489,11 +489,11 @@ Box 1, with an Intel I7-4700MQ CPU, was the fastest machine tested by a fair mar
 
 \subsubsection{Box 2}
 
-Box 2, with an Intel I5-650 CPU, was the slowest machine tested. Notably, \clocode{pmap} ran much slower than serial time on compare-sum-sqrt. This machine does not have hyper threading, and \clocode{pmap}'s performance in that test is what lead us on to thread thrashing in the first place. Reducers ran close to the expected maximum speedup given the number of cores - 300\%.
+Box 2, with an Intel I5-650 CPU, was the slowest machine tested. Notably, \clocode{pmap} ran much slower than serial time on compare-sum-sqrt, and \clocode{pmap}'s performance in that test is what lead us on to thread thrashing in the first place. Reducers ran close to the expected maximum speedup given the number of cores - 100\%.
 
 \subsubsection{Box 3}
 
-Box 3 was our only AMD machine, running a fx-8350 CPU. This machine, while also without hyper-threading, still handled \clocode{pmap} better than Box 2. It did not, however, reach the expected speedup - as an 8 core CPU, using reducers should show a 700\% improvement, but it actually ran near a 300\% improvement. The fx-8350 CPU is technically an 8 core CPU; it's architecture, where each pair of cores is packaged into a module that shares some components between cores~\cite{McIntyre:2012}, may have something to do with this.
+Box 3 was our only AMD machine, running a fx-8350 CPU. This machine, while without hyper-threading, still handled \clocode{pmap} better than Box 2. It did not, however, reach the expected speedup - as an 8 core CPU, using reducers should show a 700\% improvement, but it actually ran near a 300\% improvement. The fx-8350 CPU is technically an 8 core CPU; it's architecture, where each pair of cores is packaged into a module that shares some components between cores~\cite{McIntyre:2012}, may have something to do with this.
 \subsection{Discussion}\label{sec:discussion}
 
 We have found that the reducers library, in all tested cases, reduces the execution time significantly. In both Intel machines, the reduction was close to a factor of the number of cores. The AMD fx-8350 machine tested did not show this same pattern. We suspect that the somewhat novel Bulldozer architecture, where each pair of cores is packaged into modules that share components~\cite{McIntyre:2012},  was a factor. 

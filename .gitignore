@@ -1,6 +1,6 @@
 *.gz
 *.aux
-*.pdf
+.pdf
 *.bbl
 *.log
 *.blg
